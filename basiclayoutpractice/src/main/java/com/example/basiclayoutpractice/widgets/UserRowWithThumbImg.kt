@@ -2,6 +2,7 @@ package com.example.basiclayoutpractice.widgets
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,7 @@ import com.example.basiclayoutpractice.models.UserModel
 fun UserRowWithThumbImg(modifier: Modifier = Modifier) {
     val userModel = UserModel(R.drawable.bash, "Alfred Sisley", "3 minutes ago")
 
-    Box(modifier = modifier.padding(10.dp)) {
+    Box(modifier = modifier.padding(10.dp).clickable {  }) {
         Column(
             modifier = modifier
                 .border(width = 0.5.dp, color = Color.Black)
