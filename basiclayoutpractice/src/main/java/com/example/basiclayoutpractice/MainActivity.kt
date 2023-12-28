@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.basiclayoutpractice.ui.theme.CompoosePreperationsTheme
+import com.example.basiclayoutpractice.widgets.StackView
 import com.example.basiclayoutpractice.widgets.UserRowCard
 
 class MainActivity : ComponentActivity() {
@@ -23,8 +24,8 @@ class MainActivity : ComponentActivity() {
             CompoosePreperationsTheme {
                 // A surface container using the 'background' color from the theme
 
-                    UserRowCard()
-
+//                    UserRowCard()
+                StackView()
             }
         }
     }

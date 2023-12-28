@@ -1,6 +1,8 @@
 package com.example.basiclayoutpractice.widgets
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +73,50 @@ fun UserRowCard(modifier: Modifier = Modifier) {
                     style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 )
                 Text(text = userModel.lastSeen)
+            }
+        }
+    }
+}
+
+@Composable
+fun StackView(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.padding(10.dp)) {
+        Box(
+            modifier = modifier
+                .height(300.dp)
+                .fillMaxWidth()
+                .border(width = 1.dp, color = Color.Blue)
+                .padding(10.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(
+                        RoundedCornerShape(10.dp)
+                    )
+                    .background(color = Color.LightGray)
+            ) {
+
+            }
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(color = Color.LightGray)
+                    .size(200.dp)
+
+            ) {
+
+            }
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(color = Color.Red)
+            ) {
+
             }
         }
     }
