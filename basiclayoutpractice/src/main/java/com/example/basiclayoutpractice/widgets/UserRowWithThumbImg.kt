@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -62,7 +63,11 @@ fun UserRowWithThumbImg(modifier: Modifier = Modifier) {
 
             Image(
                 painter = painterResource(id = R.drawable.thumb),
-                contentDescription = "ThumbImage"
+                contentDescription = "ThumbImage",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .height(300.dp)
+                    .clip(RoundedCornerShape(5.dp))
             )
         }
     }
