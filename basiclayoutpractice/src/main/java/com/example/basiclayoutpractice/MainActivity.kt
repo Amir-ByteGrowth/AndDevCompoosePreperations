@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.basiclayoutpractice.ui.theme.CompoosePreperationsTheme
+import com.example.basiclayoutpractice.widgets.ConstraintBoxWithCol
 import com.example.basiclayoutpractice.widgets.UserRowWithThumbImg
 
 class MainActivity : ComponentActivity() {
@@ -19,7 +20,8 @@ class MainActivity : ComponentActivity() {
 
 //                    UserRowCard()
 //                StackView()
-                UserRowWithThumbImg()
+//                UserRowWithThumbImg()
+                ConstraintBoxWithCol()
             }
         }
     }
