@@ -11,3 +11,15 @@ val listOfImages = listOf(
     "https://play-lh.googleusercontent.com/AYbcmmhoi3MCClJCV-GfGCWszqjBc8gaUtKzLuK4G1OG2BUndwJz5Hwv4WrC-qoTLrlD=w240-h480-rw",
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQOxIKcUJwlRydIPoKAUi0gmM-0IubDQ-77g&usqp=CAU"
 )
+
+data class TitleSubData(val title: String, val subTitle: String)
+
+val listOfTitleSubTitle = listOf<TitleSubData>(
+    TitleSubData("Title 1", "Subtitle 1"),
+    TitleSubData("Title 2", "Subtitle 2"),
+    TitleSubData("Title 3", "Subtitle 3"),
+    TitleSubData("Title 4", "Subtitle 4"),
+    TitleSubData("Title 5", "Subtitle 5"),
+    TitleSubData("Title 6", "Subtitle 6"),
+    TitleSubData("Title 7", "Subtitle 7")
+)
