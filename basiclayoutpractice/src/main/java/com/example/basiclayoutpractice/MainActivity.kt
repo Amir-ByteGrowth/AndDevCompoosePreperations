@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.basiclayoutpractice.ui.theme.CompoosePreperationsTheme
 import com.example.basiclayoutpractice.widgets.CardWithLandPortraitBoCons
 import com.example.basiclayoutpractice.widgets.ConstraintBoxWithCol
+import com.example.basiclayoutpractice.widgets.CustomModifierWidget
 import com.example.basiclayoutpractice.widgets.ListOfFloatingActionButton
 import com.example.basiclayoutpractice.widgets.UserRowWithThumbImg
 
@@ -25,7 +26,8 @@ class MainActivity : ComponentActivity() {
 //                UserRowWithThumbImg()
 //                ConstraintBoxWithCol()
 //                CardWithLandPortraitBoCons()
-                ListOfFloatingActionButton()
+//                ListOfFloatingActionButton()
+                CustomModifierWidget()
             }
         }
     }
