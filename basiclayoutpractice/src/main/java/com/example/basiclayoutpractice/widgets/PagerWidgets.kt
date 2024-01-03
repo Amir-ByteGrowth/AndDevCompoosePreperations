@@ -1,5 +1,6 @@
 package com.example.basiclayoutpractice.widgets
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -147,5 +150,25 @@ fun VerticalPagerCardItem(index: Int, modifier: Modifier = Modifier) {
                 style = TextStyle.Default.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
             )
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LaunchEffectWithPager() {
+    var pagerState = rememberPagerState()
+    LaunchedEffect(key1 = pagerState) {
+        snapshotFlow {
+            pagerState.currentPage
+        }.collect {
+            Log.d("CurrentPage", pagerState.currentPage.toString())
+        }
+
+    }
+    VerticalPager(
+        state = pagerState,
+        pageCount = 10
+    ) { page ->
+        Text(text = "Page: $page")
     }
 }
