@@ -17,7 +17,7 @@ import com.example.basiclayoutpractice.widgets.LaunchEffectWithPager
 import com.example.basiclayoutpractice.widgets.ListOfFloatingActionButton
 import com.example.basiclayoutpractice.widgets.UserRowWithThumbImg
 import com.example.basiclayoutpractice.widgets.VerticalPagerWidget
-
+import com.example.basiclayoutpractice.widgets.hzpagetindicator.HorizontalPagerSample
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +34,8 @@ class MainActivity : ComponentActivity() {
 //                CustomModifierUsingComposable()
 //                HorizontalPagerWidget()
 //                VerticalPagerWidget()
-                LaunchEffectWithPager()
+//                LaunchEffectWithPager()
+                HorizontalPagerSample()
             }
         }
     }
