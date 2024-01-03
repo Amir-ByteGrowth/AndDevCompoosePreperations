@@ -12,8 +12,10 @@ import com.example.basiclayoutpractice.widgets.CardWithLandPortraitBoCons
 import com.example.basiclayoutpractice.widgets.ConstraintBoxWithCol
 import com.example.basiclayoutpractice.widgets.CustomModifierUsingComposable
 import com.example.basiclayoutpractice.widgets.CustomModifierWidget
+import com.example.basiclayoutpractice.widgets.HorizontalPagerWidget
 import com.example.basiclayoutpractice.widgets.ListOfFloatingActionButton
 import com.example.basiclayoutpractice.widgets.UserRowWithThumbImg
+import com.example.basiclayoutpractice.widgets.VerticalPagerWidget
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +30,9 @@ class MainActivity : ComponentActivity() {
 //                ConstraintBoxWithCol()
 //                CardWithLandPortraitBoCons()
 //                ListOfFloatingActionButton()
-                CustomModifierUsingComposable()
+//                CustomModifierUsingComposable()
+//                HorizontalPagerWidget()
+                VerticalPagerWidget()
             }
         }
     }
