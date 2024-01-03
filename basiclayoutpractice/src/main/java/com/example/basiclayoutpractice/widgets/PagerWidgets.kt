@@ -15,10 +15,12 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.basiclayoutpractice.R
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -52,14 +55,23 @@ fun HorizontalPagerWidget() {
 fun VerticalPagerWidget() {
     // Display 10 items
     val pagerState = rememberPagerState()
-    VerticalPager(
-        pageCount = 10,
-        state = pagerState,
-        contentPadding = PaddingValues(10.dp),
-        pageSpacing = 10.dp
-    ) { index ->
-        VerticalPagerCardItem(index = index)
+// scroll to page
+    val coroutineScope = rememberCoroutineScope()
+    Column {
+        Button(onClick = { coroutineScope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } }) {
+            Text(text = "Click Here")
+        }
+        VerticalPager(
+            pageCount = 10,
+            state = pagerState,
+            contentPadding = PaddingValues(10.dp),
+            pageSpacing = 10.dp, beyondBoundsPageCount = 1
+        ) { index ->
+            VerticalPagerCardItem(index = index)
+        }
+
     }
+
 
 }
 
