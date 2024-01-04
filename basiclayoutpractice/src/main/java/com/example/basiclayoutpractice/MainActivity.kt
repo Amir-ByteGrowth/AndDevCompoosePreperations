@@ -17,6 +17,9 @@ import com.example.basiclayoutpractice.widgets.LaunchEffectWithPager
 import com.example.basiclayoutpractice.widgets.ListOfFloatingActionButton
 import com.example.basiclayoutpractice.widgets.UserRowWithThumbImg
 import com.example.basiclayoutpractice.widgets.VerticalPagerWidget
+import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.FlowRowItemsWidget
+import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.FlowRowWidget
+import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.flowGridView
 import com.example.basiclayoutpractice.widgets.hzpagetindicator.HorizontalPagerSample
 import com.example.basiclayoutpractice.widgets.hzpagetindicator.HorizontalPagerTabRowSample
 
@@ -38,7 +41,10 @@ class MainActivity : ComponentActivity() {
 //                VerticalPagerWidget()
 //                LaunchEffectWithPager()
 //                HorizontalPagerSample()
-                HorizontalPagerTabRowSample()
+//                HorizontalPagerTabRowSample()
+//                FlowRowWidget()
+//                flowGridView(50,10)
+                FlowRowItemsWidget()
             }
         }
     }
