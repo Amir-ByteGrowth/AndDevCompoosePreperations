@@ -18,6 +18,7 @@ import com.example.basiclayoutpractice.widgets.ListOfFloatingActionButton
 import com.example.basiclayoutpractice.widgets.UserRowWithThumbImg
 import com.example.basiclayoutpractice.widgets.VerticalPagerWidget
 import com.example.basiclayoutpractice.widgets.customlayoutwidgets.CustomLayoutWidget
+import com.example.basiclayoutpractice.widgets.customlayoutwidgets.ReverseFlowRowPreview
 import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.FlowRowItemsWidget
 import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.FlowRowWidget
 import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.flowGridView
@@ -46,7 +47,8 @@ class MainActivity : ComponentActivity() {
 //                FlowRowWidget()
 //                flowGridView(50,10)
 //                FlowRowItemsWidget()
-                CustomLayoutWidget()
+//                CustomLayoutWidget()
+                ReverseFlowRowPreview()
             }
         }
     }
