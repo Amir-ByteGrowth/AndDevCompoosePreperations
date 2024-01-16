@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "CompoosePreperations"
 include(":app")
 include(":basiclayoutpractice")
+include(":jetnewsvariablesize")
