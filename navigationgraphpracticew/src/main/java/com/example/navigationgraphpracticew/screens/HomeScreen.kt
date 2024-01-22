@@ -12,11 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.navigationgraphpracticew.navigation.NavigationItem
 
 @Composable
-fun HomeScreen(navHostController: NavHostController,name:String?) {
+fun HomeScreen(navHostController: NavHostController, name: String?) {
     Box(
         Modifier
             .background(color = Color.White)
@@ -24,9 +23,18 @@ fun HomeScreen(navHostController: NavHostController,name:String?) {
         contentAlignment = Alignment.Center
     ) {
         Column {
-            Text(text = name?: "HomeScreen")
-            Button(onClick = { navHostController.navigate(NavigationItem.Splash.route+"/Splash") }) {
+            Text(text = name ?: "HomeScreen")
+            Button(onClick = { navHostController.navigate(NavigationItem.Splash.route + "/Splash") }) {
                 Text(text = "Go to Dashboard")
+            }
+            Button(onClick = {
+                navHostController.previousBackStackEntry?.savedStateHandle?.set(
+                    "msg",
+                    "From Home"
+                )
+                navHostController.popBackStack()
+            }) {
+                Text(text = "Back to Splash")
             }
         }
 

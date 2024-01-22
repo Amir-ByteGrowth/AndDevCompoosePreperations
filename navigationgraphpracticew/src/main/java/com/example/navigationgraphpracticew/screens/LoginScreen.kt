@@ -10,24 +10,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.example.navigationgraphpracticew.navigation.NavigationItem
 
 @Composable
-fun LoginScreen(navHostController: NavHostController,name:String?) {
+fun LoginScreen(navHostController: NavHostController, name: String?) {
     Box(
         Modifier
             .background(color = Color.White)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+
+        // Retrieve data from next screen
+        val msg =
+            navHostController.currentBackStackEntry?.savedStateHandle?.get<String>("msg")
+
         Column {
-            Text(text = name?: "LoginScreen")
-            Button(onClick = { navHostController.navigate(NavigationItem.Home.route+"/Home") }) {
+            Text(text = name ?: "LoginScreen")
+            Button(onClick = { navHostController.navigate(NavigationItem.Home.route + "/Home") }) {
                 Text(text = "Go to Home")
             }
+
+            Text(text = msg ?: "")
         }
 
     }
