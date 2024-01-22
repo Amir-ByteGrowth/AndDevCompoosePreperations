@@ -15,7 +15,7 @@ import androidx.navigation.NavHostController
 import com.example.navigationgraphpracticew.navigation.NavigationItem
 
 @Composable
-fun HomeScreen(navHostController: NavHostController, name: String?) {
+fun HomeScreen(navHostController: NavHostController, name: String?,id:String?) {
     Box(
         Modifier
             .background(color = Color.White)
@@ -23,7 +23,7 @@ fun HomeScreen(navHostController: NavHostController, name: String?) {
         contentAlignment = Alignment.Center
     ) {
         Column {
-            Text(text = name ?: "HomeScreen")
+            Text(text = name ?: "HomeScreen" + id ?: "")
             Button(onClick = { navHostController.navigate(NavigationItem.Splash.route + "/Splash") }) {
                 Text(text = "Go to Dashboard")
             }

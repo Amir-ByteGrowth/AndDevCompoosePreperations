@@ -24,7 +24,7 @@ var param = "/{name}"
 
 sealed class NavigationItem(val route: String) {
     object Splash : NavigationItem(Screen.SPLASH.name + param)
-    object Home : NavigationItem(Screen.HOME.name + param)
+    object Home : NavigationItem(Screen.HOME.name + param+",{id}")
     object Login : NavigationItem(Screen.LOGIN.name + param)
 }
 
@@ -53,12 +53,12 @@ fun AppNavHost(
             LoginScreen(navController, getParamValue(backStackEntry))
         }
         composable(NavigationItem.Home.route + param) { backStackEntry ->
-            HomeScreen(navController, getParamValue(backStackEntry))
+            HomeScreen(navController, getParamValue(backStackEntry),getParamValue(backStackEntry,"id"))
         }
     }
 
 }
 
-fun getParamValue(backStackEntry: NavBackStackEntry): String? {
-    return backStackEntry.arguments?.getString("name")
+fun getParamValue(backStackEntry: NavBackStackEntry,paramName:String="name"): String? {
+    return backStackEntry.arguments?.getString(paramName)
 }

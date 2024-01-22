@@ -29,7 +29,7 @@ fun LoginScreen(navHostController: NavHostController, name: String?) {
 
         Column {
             Text(text = name ?: "LoginScreen")
-            Button(onClick = { navHostController.navigate(NavigationItem.Home.route + "/Home") }) {
+            Button(onClick = { navHostController.navigate(NavigationItem.Home.route + "/Home"+",abc") }) {
                 Text(text = "Go to Home")
             }
 
