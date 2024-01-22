@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.example.navigationgraphpracticew.navigation.NavigationItem
+import com.example.navigationgraphpracticew.navigation.NestedNavigationItem
 
 @Composable
 fun HomeScreen(navHostController: NavHostController, name: String?,id:String?) {
@@ -24,8 +25,8 @@ fun HomeScreen(navHostController: NavHostController, name: String?,id:String?) {
     ) {
         Column {
             Text(text = name ?: "HomeScreen" + id ?: "")
-            Button(onClick = { navHostController.navigate(NavigationItem.Splash.route + "/Splash") }) {
-                Text(text = "Go to Dashboard")
+            Button(onClick = { navHostController.navigate(NestedNavigationItem.Register.route ) }) {
+                Text(text = "Go to Nested")
             }
             Button(onClick = {
                 navHostController.previousBackStackEntry?.savedStateHandle?.set(
