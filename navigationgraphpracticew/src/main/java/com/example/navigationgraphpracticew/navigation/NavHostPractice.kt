@@ -43,19 +43,22 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(NavigationItem.Splash.route + param) {backStackEntry ->
+        composable(NavigationItem.Splash.route + param, arguments = listOf(navArgument("name") {
+            defaultValue = "Splash"
+            type = NavType.StringType
+        })) { backStackEntry ->
             SplashScreen(navController, getParamValue(backStackEntry))
         }
         composable(NavigationItem.Login.route + param) { backStackEntry ->
-            LoginScreen(navController,getParamValue(backStackEntry))
+            LoginScreen(navController, getParamValue(backStackEntry))
         }
         composable(NavigationItem.Home.route + param) { backStackEntry ->
-            HomeScreen(navController,getParamValue(backStackEntry))
+            HomeScreen(navController, getParamValue(backStackEntry))
         }
     }
 
 }
 
-fun getParamValue(backStackEntry: NavBackStackEntry):String?{
+fun getParamValue(backStackEntry: NavBackStackEntry): String? {
     return backStackEntry.arguments?.getString("name")
 }
