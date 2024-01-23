@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NavigationGraphPracticew</string>
+    <string name="friendslist">FriendsList</string>
+    <string name="profile">Profile</string>
 </resources>

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.navigationgraphpracticew.bottomnavbar.BottomNavbarScreen
 import com.example.navigationgraphpracticew.navigation.AppNavHost
 import com.example.navigationgraphpracticew.navigation.NestedNavGraph
 import com.example.navigationgraphpracticew.ui.theme.CompoosePreperationsTheme
@@ -26,7 +27,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 //                    AppNavHost(navController = rememberNavController())
-                    NestedNavGraph(navController = rememberNavController())
+//                    NestedNavGraph(navController = rememberNavController())
+                    BottomNavbarScreen()
                 }
             }
         }
