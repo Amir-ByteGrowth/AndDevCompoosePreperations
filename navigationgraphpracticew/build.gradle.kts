@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -67,4 +69,11 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation ("androidx.navigation:navigation-compose:2.7.6")
+
+    // Dependency Injection
+//    implementation("com.google.dagger:hilt-android:2.48")
+//    implementation("com.google.dagger:hilt-android-compiler:2.46.1")
+//    implementation("androidx.hilt:hilt-compiler:1.1.0")
+//    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+
 }

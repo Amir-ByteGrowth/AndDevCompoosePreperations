@@ -22,7 +22,7 @@ fun UserScreen(navigateBack: () -> Unit,navigateUserDetail: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Red),
+            .background(color = Color.Magenta),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -17,15 +17,15 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun MessageScreen(navigate: () -> Unit) {
+fun DetailScreen(navigate: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Red),
+            .background(color = Color.Blue),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Message Screen")
+        Text(text = "Detail Screen")
         Spacer(modifier = Modifier.height(30.dp))
         Button(onClick = { navigate.invoke() }, modifier = Modifier.width(100.dp)) {
             Text(text = "Back")
