@@ -69,4 +69,5 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation ("io.coil-kt:coil-compose:1.4.0")
     implementation ("androidx.compose.foundation:foundation:1.4.3")
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 }
