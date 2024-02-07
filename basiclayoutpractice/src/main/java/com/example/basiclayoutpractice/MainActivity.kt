@@ -25,6 +25,7 @@ import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.FlowRowWidget
 import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.flowGridView
 import com.example.basiclayoutpractice.widgets.hzpagetindicator.HorizontalPagerSample
 import com.example.basiclayoutpractice.widgets.hzpagetindicator.HorizontalPagerTabRowSample
+import com.example.basiclayoutpractice.widgets.webviewwidget.WebViewWidget
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +51,8 @@ class MainActivity : ComponentActivity() {
 //                FlowRowItemsWidget()
 //                CustomLayoutWidget()
 //                ReverseFlowRowPreview()
-                CustomSquare()
+//                CustomSquare()
+                WebViewWidget()
             }
         }
     }
