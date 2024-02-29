@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="immersive_sys_ui">#33000000</color>
+
+    <color name="colorPrimary">@color/colorPrimaryBlue</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">@color/colorPrimaryGreen</color>
+
+    <color name="colorPrimaryBlue">#1490eb</color>
+    <color name="colorRipplePrimaryBlue">#801490EB</color>
+    <color name="colorPrimaryGreen">#50b83f</color>
+    <color name="colorPrimaryGreenLight">#4050B83F</color>
+    <color name="colorSecondarySkyBlue">#f3f9fd</color>
+    <color name="colorSecondarySkyBlueDark">#e3f3ff</color>
+    <color name="colorSecondaryLightGrey">#f0f0f0</color>
+    <color name="colorSecondaryBlack">#000000</color>
+    <color name="colorSecondaryGrey">#80000000</color>
+    <color name="colorBlackThreeOpacity">#08000000</color>
+    <color name="colorTertiaryGreen">#50b83f</color>
+    <color name="colorTertiaryRed">#e54d20</color>
+    <color name="colorTertiaryYellow">#ed9215</color>
+    <color name="colorTertiaryGrey">#9a9a9a</color>
+    <color name="colorLineGrey">#0D000000</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="dividerColor">#1a000000</color>
+    <color name="rippleColorWhite">#80FFFFFF</color>
+    <color name="rippleColorGrey">#9EB5B3B3</color>
+    <color name="radiusBorder">#0d000000</color>
+    <color name="successToastBorder">#50b83f</color>
+    <color name="successToastFill">#e3f4e2</color>
+    <color name="warningToastBorder">#ed9215</color>
+    <color name="waringToastFill">#fbeac4</color>
+    <color name="errorToastBorder">#e54d20</color>
+    <color name="errorToastFill">#f3dada</color>
+    <color name="infoToastBorder">#2979d0</color>
+    <color name="infoToastFill">#e0eafa</color>
+    <color name="lightSkyBlue">#261490eb</color>
+    <color name="lightGreen">#2650b83f</color>
+    <color name="orangeRed">#f46e46</color>
+    <color name="dashboard_bottomview_top">#533a8abc</color>
+
+</resources>

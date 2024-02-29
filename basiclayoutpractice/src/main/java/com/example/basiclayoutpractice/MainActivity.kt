@@ -3,29 +3,21 @@ package com.example.basiclayoutpractice
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.basiclayoutpractice.ui.theme.CompoosePreperationsTheme
-import com.example.basiclayoutpractice.widgets.CardWithLandPortraitBoCons
-import com.example.basiclayoutpractice.widgets.ConstraintBoxWithCol
-import com.example.basiclayoutpractice.widgets.CustomModifierUsingComposable
-import com.example.basiclayoutpractice.widgets.CustomModifierWidget
-import com.example.basiclayoutpractice.widgets.HorizontalPagerWidget
-import com.example.basiclayoutpractice.widgets.LaunchEffectWithPager
-import com.example.basiclayoutpractice.widgets.ListOfFloatingActionButton
-import com.example.basiclayoutpractice.widgets.UserRowWithThumbImg
-import com.example.basiclayoutpractice.widgets.VerticalPagerWidget
-import com.example.basiclayoutpractice.widgets.customlayoutwidgets.CustomLayoutWidget
-import com.example.basiclayoutpractice.widgets.customlayoutwidgets.CustomSquare
-import com.example.basiclayoutpractice.widgets.customlayoutwidgets.ReverseFlowRowPreview
-import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.FlowRowItemsWidget
-import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.FlowRowWidget
-import com.example.basiclayoutpractice.widgets.flowlayoutswidgets.flowGridView
-import com.example.basiclayoutpractice.widgets.hzpagetindicator.HorizontalPagerSample
-import com.example.basiclayoutpractice.widgets.hzpagetindicator.HorizontalPagerTabRowSample
-import com.example.basiclayoutpractice.widgets.webviewwidget.WebViewWidget
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +44,8 @@ class MainActivity : ComponentActivity() {
 //                CustomLayoutWidget()
 //                ReverseFlowRowPreview()
 //                CustomSquare()
-                WebViewWidget()
+//                WebViewWidget()
+                Greeting("Android")
             }
         }
     }
@@ -60,16 +53,44 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+    Surface(modifier = modifier.fillMaxSize(), color = Color.Red) {
+        Column(
+
+            verticalArrangement = Arrangement.Center
+
+        ) {
+            Text(
+                text = "Happy Birthday  $name! ",
+                modifier = modifier,
+                fontSize = 100.sp,
+                lineHeight = 116.sp,
+                textAlign = TextAlign.Center
+
+            )
+
+            Text(
+
+                text = "From Emma",
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .align(Alignment.End),
+                fontSize = 50.sp,
+                lineHeight = 60.sp,
+
+
+                )
+
+
+        }
+    }
+
+
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     CompoosePreperationsTheme {
-        Greeting("Android")
+        Greeting("Sam")
     }
 }
