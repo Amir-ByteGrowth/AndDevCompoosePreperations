@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
 <!--    vaultspay-->
     <color name="settings_back">#f3f9fd</color>
+    <color name="grey_text">#80000000</color>
 </resources>

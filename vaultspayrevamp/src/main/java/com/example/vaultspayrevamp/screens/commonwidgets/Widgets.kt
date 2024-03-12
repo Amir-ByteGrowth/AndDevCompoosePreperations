@@ -14,16 +14,32 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 
 @Composable
-fun CommonTextView(label: String, fontFamily: FontFamily,color:Color=Color.Black, size: TextUnit,modifier: Modifier=Modifier) {
+fun CommonTextView(
+    label: String,
+    fontFamily: FontFamily,
+    color: Color = Color.Black,
+    size: TextUnit,
+    modifier: Modifier = Modifier
+) {
     Text(text = label, fontFamily = fontFamily, fontSize = size, color = color, modifier = modifier)
 }
 
 @Composable
-fun CommonVectorImage(icon: Int, modifier: Modifier = Modifier, size: DpSize, click: () -> Unit) {
+fun CommonVectorImageWithClick(icon: Int, modifier: Modifier = Modifier, size: DpSize, click: () -> Unit) {
     Image(
         imageVector = ImageVector.vectorResource(icon),
         contentDescription = "Close", modifier = modifier
             .size(size)
-            .clickable { }
+            .clickable { click.invoke() }
+    )
+}
+
+@Composable
+fun CommonVectorImage(icon: Int, modifier: Modifier = Modifier, size: DpSize) {
+    Image(
+        imageVector = ImageVector.vectorResource(icon),
+        contentDescription = "Close", modifier = modifier
+            .size(size)
+
     )
 }
