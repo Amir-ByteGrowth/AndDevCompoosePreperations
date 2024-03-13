@@ -35,6 +35,7 @@ import com.example.vaultspayrevamp.screens.commonwidgets.CommonTextView
 import com.example.vaultspayrevamp.screens.commonwidgets.CommonVectorImage
 import com.example.vaultspayrevamp.screens.commonwidgets.CommonVectorImageWithClick
 import com.example.vaultspayrevamp.screens.commonwidgets.KycStatusSection
+import com.example.vaultspayrevamp.screens.commonwidgets.SettingsGenericWidget
 import com.example.vaultspayrevamp.ui.theme.urbanist_bold
 import com.example.vaultspayrevamp.ui.theme.urbanist_semi_bold
 
@@ -178,7 +179,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 )
             }
 
-
+            SettingsGenericWidget()
 
         }
     }
