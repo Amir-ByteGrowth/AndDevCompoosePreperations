@@ -10,4 +10,6 @@
 <!--    vaultspay-->
     <color name="settings_back">#f3f9fd</color>
     <color name="grey_text">#80000000</color>
+    <color name="green">#50b83f</color>
+    <color name="blue">#1490eb</color>
 </resources>

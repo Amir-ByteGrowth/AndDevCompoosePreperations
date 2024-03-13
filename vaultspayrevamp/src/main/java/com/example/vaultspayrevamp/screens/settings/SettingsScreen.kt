@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,7 +34,9 @@ import com.example.vaultspayrevamp.R
 import com.example.vaultspayrevamp.screens.commonwidgets.CommonTextView
 import com.example.vaultspayrevamp.screens.commonwidgets.CommonVectorImage
 import com.example.vaultspayrevamp.screens.commonwidgets.CommonVectorImageWithClick
+import com.example.vaultspayrevamp.screens.commonwidgets.KycStatusSection
 import com.example.vaultspayrevamp.ui.theme.urbanist_bold
+import com.example.vaultspayrevamp.ui.theme.urbanist_semi_bold
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier) {
@@ -80,6 +83,8 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 modifier = modifier.padding(top = 15.dp)
             )
 
+            //wallet section
+
             Row(
                 modifier = modifier
                     .padding(top = 10.dp)
@@ -109,7 +114,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     )
                 }
 
-
+//account number
                 Row(
                     modifier = modifier
                         .fillMaxHeight()
@@ -128,7 +133,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                         label = "Acc No. 1000971123456789",
                         fontFamily = urbanist_bold,
                         size = 9.sp,
-                        color = colorResource(id = R.color.grey_text)
+                        color = R.color.grey_text
                     )
                     CommonVectorImage(
                         icon = R.drawable.path_8520,
@@ -138,6 +143,41 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 
 
             }
+            //kyc section
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = modifier.padding(top = 12.dp)
+            ) {
+                KycStatusSection(color = colorResource(id = R.color.green))
+                KycStatusSection(
+                    color = colorResource(id = R.color.blue),
+                    label = "Merchant Account", icon = R.drawable.individual_user_small_icon
+                )
+            }
+
+            //loged in location
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier.padding(top = 12.dp)
+            ) {
+                CommonTextView(
+                    label = "Logged in from",
+                    fontFamily = urbanist_semi_bold,
+                    size = 9.sp, color = R.color.grey_text
+                )
+                Spacer(modifier = modifier.width(8.dp))
+                CommonVectorImage(
+                    icon = R.drawable.location_icon_light,
+                    size = DpSize(width = 9.dp, height = 9.dp),
+                    modifier = modifier.padding(end = 3.dp)
+                )
+                CommonTextView(
+                    label = "Dubai",
+                    fontFamily = urbanist_semi_bold,
+                    size = 9.sp, color = R.color.grey_text
+                )
+            }
+
 
 
         }
