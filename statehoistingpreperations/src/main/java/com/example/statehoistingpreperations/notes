@@ -1,0 +1,22 @@
+When a composable contains complex UI logic that involves one or multiple state fields of a UI element,
+it should delegate that responsibility to state holders, like a plain state holder class.
+This makes the composable's logic more testable in isolation, and reduces its complexity.
+This approach favors the separation of concerns principle: the composable is in charge of emitting UI elements,
+and the state holder contains the UI logic and UI element state.
+
+Plain state holder classes provide convenient functions to callers of your composable function,
+so they don't have to write this logic themselves.
+
+These plain classes are created and remembered in the Composition. Because they follow the composable's lifecycle,
+ they can take types provided by the Compose library such as rememberNavController() or rememberLazyListState().
+
+ A plain state holder class, often referred to as a simple state holder, is a class used to manage
+ and encapsulate the state of a component in an Android application, particularly when using Jetpack Compose.
+ This class typically does not contain any complex business logic but focuses on holding and
+ updating state data that the UI can observe and react to.
+
+ Why Use a Plain State Holder Class?
+ Separation of Concerns: Keeps the state management separate from the UI logic, promoting a clean architecture.
+ Reusability: Makes the state management logic reusable across different components.
+ Testability: Easier to write unit tests for state changes without involving UI components.
+ Lifecycle Awareness: Can be scoped to a lifecycle, ensuring proper state management across configuration changes.
