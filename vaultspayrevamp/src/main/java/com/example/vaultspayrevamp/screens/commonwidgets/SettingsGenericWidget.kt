@@ -1,9 +1,12 @@
 package com.example.vaultspayrevamp.screens.commonwidgets
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -17,6 +20,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.vaultspayrevamp.R
+import com.example.vaultspayrevamp.models.ItemType
+import com.example.vaultspayrevamp.models.SettingsGenericItemModel
+import com.example.vaultspayrevamp.models.accountSettingsList
 import com.example.vaultspayrevamp.ui.theme.urbanist_bold
 import com.example.vaultspayrevamp.ui.theme.urbanist_semi_bold
 
@@ -35,17 +41,21 @@ fun SettingsGenericWidget(modifier: Modifier = Modifier, label: String = "Accoun
 
         Card(
             modifier = modifier
-                .height(100.dp)
                 .fillMaxWidth()
                 .constrainAs(card) {
                     top.linkTo(title.bottom, 10.dp)
                 },
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            LazyColumn {
-                item {
-                    SettingsItem()
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                accountSettingsList.forEach { item ->
+                    SettingsItem(genericItemModel = item)
                 }
+
+//                item {
+//                    SettingsItem()
+//                }
 
             }
         }
@@ -56,12 +66,12 @@ fun SettingsGenericWidget(modifier: Modifier = Modifier, label: String = "Accoun
 
 
 @Composable
-fun SettingsItem(modifier: Modifier = Modifier) {
-    ConstraintLayout(modifier = modifier.fillMaxWidth()) {
+fun SettingsItem(modifier: Modifier = Modifier, genericItemModel: SettingsGenericItemModel) {
+    ConstraintLayout(modifier = modifier.fillMaxWidth().padding(10.dp)) {
         val (iconId, titleId, detailId, forwardIconId, switchId) = createRefs()
         var startBarrier = createStartBarrier(forwardIconId, switchId)
         CommonVectorImage(
-            icon = R.drawable.account_icon_with_bg,
+            icon = genericItemModel.icon,
             size = DpSize(width = 30.dp, height = 30.dp), modifier = modifier.constrainAs(iconId) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
@@ -77,34 +87,39 @@ fun SettingsItem(modifier: Modifier = Modifier) {
                 end.linkTo(startBarrier, 10.dp)
                 width = Dimension.fillToConstraints
             }) {
-            CommonTextView(label = "Account Information", fontFamily = urbanist_bold, size = 11.sp)
-            CommonTextView(
-                label = "Set secondary email or phone numbers to\nreceive notifications",
-                fontFamily = urbanist_semi_bold,
-                size = 9.sp
-            )
+            CommonTextView(label = genericItemModel.title, fontFamily = urbanist_bold, size = 11.sp)
+            genericItemModel.detail?.let {
+                CommonTextView(
+                    label = it,
+                    fontFamily = urbanist_semi_bold,
+                    size = 9.sp
+                )
+            }
+
+
         }
 
+        if (genericItemModel.itemType == ItemType.MoveForward) {
+            CommonVectorImage(
+                icon = R.drawable.forward_icon,
+                size = DpSize(width = 10.dp, height = 10.dp),
+                modifier = modifier
+                    .constrainAs(forwardIconId) {
+                        end.linkTo(parent.end)
+                        top.linkTo(iconId.top)
+                        bottom.linkTo(iconId.bottom)
+                    }
 
-        CommonVectorImage(
-            icon = R.drawable.forward_icon,
-            size = DpSize(width = 10.dp, height = 10.dp),
-            modifier = modifier
-                .constrainAs(forwardIconId) {
-                    end.linkTo(parent.end)
-                    top.linkTo(iconId.top)
-                    bottom.linkTo(iconId.bottom)
-                }
-
-        )
+            )
+        }
 
 
     }
 }
 
 
-@Preview
-@Composable
-fun PreviewSettingGeneric() {
-    SettingsGenericWidget()
-}
+//@Preview
+//@Composable
+//fun PreviewSettingGeneric() {
+//    SettingsGenericWidget()
+//}
