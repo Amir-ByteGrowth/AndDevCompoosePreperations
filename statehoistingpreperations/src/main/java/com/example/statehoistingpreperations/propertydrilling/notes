@@ -1,0 +1,49 @@
+Property drilling
+
+“Property drilling” refers to passing data through several nested children
+components to the location where they’re read.
+
+A typical example of where property drilling can appear in Compose is when
+ you inject the screen level state holder at the top level and pass down state
+ and events to children composables. This might additionally generate an
+ overload of composable functions signatures.
+
+Even though exposing events as individual lambda parameters could overload
+the function signature, it maximizes the visibility of what the composable
+function responsibilities are. You can see what it does at a glance.
+
+Property drilling is preferable over creating wrapper classes to encapsulate
+state and events in one place because this reduces the visibility of the composable
+responsibilities. By not having wrapper classes you’re also more likely to
+pass composables only the parameters they need, which is a best practice.
+
+chat gpt
+Property drilling, also known as prop drilling, is a pattern in which data is passed
+down through multiple layers of components (or composables in the context of Jetpack Compose)
+ by passing properties through each component in the hierarchy. This can lead to cumbersome
+ and hard-to-maintain code, especially as the number of layers increases.
+
+In Jetpack Compose, property drilling can be necessary when a state or event needs to
+be propagated from a parent composable down to deeply nested child composables. However,
+it's often better to manage state in a way that avoids excessive property drilling.
+
+Avoiding Property Drilling
+To avoid property drilling, you can use different state management
+techniques such as ViewModels or CompositionLocal in Jetpack Compose.
+
+Using ViewModel
+
+The ViewModel pattern helps manage state in a way that avoids passing properties
+through multiple composable levels.
+
+Using CompositionLocal
+
+CompositionLocal allows you to create and provide values that can be accessed by any composable
+within the same composition hierarchy without having to pass them explicitly.
+
+
+
+
+
+
+
