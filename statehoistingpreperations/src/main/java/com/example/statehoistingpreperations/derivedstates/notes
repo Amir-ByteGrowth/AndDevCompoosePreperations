@@ -1,0 +1,97 @@
+derivedStateOf helps to avoid unnecessary recompositions to achieve better performance.
+ In the story we will deep-dive into derivedStateOf API and will see how it is different
+  from remember(key)
+
+  We will see When/How we should use derivedStateOf . We will further see comparison between remember(key)
+  and derivedStateOf and in the end we will look into some Applications of derivedStateOf .
+  We will answer some questions to understand derivedStateOf API, the list of such questions is below.
+  Page Content
+  When derivedStateOf API be used?
+  Why should we use remember with derivedStateOf ?
+  Can we use remember(key) (with key) as a replacement of derivedStateOf?
+  When should remember(key) (with key) be used along with derivedStateOf ?
+  When should we not use derivedStateOf and prefer remember(keys) over derivedStateOf ?
+  Applications
+  Github
+When derivedStateOf API be used?
+derivedStateOf{} is used when a compose state is derived from another compose state and the derived state
+is changing less frequently than the source state. derivedStateOf executes calculations block every time
+when internal state changes but the composable function will recompose only when the calculated value changes.
+This reduces the unnecessary recompositions making sure that composable should only recompose when it’s really required.
+To summarize, the following are important points.
+Derived state B is calculated and derived from another state A
+Derived State B is changing/updating less frequently than source state A
+Derived State B is updating UI when it changes.
+usecase:
+To understand better: Let’s take a use-case to show a Scroll To Top button when the user scrolls the list when
+the first visible index in the list is greater than 0 lazyListState.firstVisibleItemIndex > 0.
+First Let’s see basic code examples without using derivedStateOf and see its impact on performance/recomposition count.
+
+If we don’t use remember with derivedStateOf the derived StateObject created from derivedStateOf is not cached
+and every time the lazyListState.firstVisibleItemIndex changes it re-allocates new StateObject removing
+previous one causing unnecessary overhead under the hood.
+We should always use remember with derivedStateOf in order to cache the allocated StateObject storing derived
+ value and dependencies which is internally observing for change in dependencies and producing new derived state value.
+
+ Can we use remember(key) as replacement of derviedStateOf?
+ What if we use remember(key) replacing derivedStateOf ?
+ remember(key) API executes its block of code whenever the provided key value changes in order to calculate
+  new value from calculation block.
+  When input values are changing more than the output value changes then we should not use remember(key) as it
+   causes extra overhead rather we should use derivedStateOf which is an ideal choice in such cases.
+
+   When should remember(key) be used along with derivedStateOf?
+   There are cases where remember(key) with key must be used with derivedStateOf .
+   Let’s take the same example but this time we want to introduce a threshold for index change rather than making
+   it hard code 0 as in all of our previous examples.
+   Before using remember(key) with threshold as a key, let’s take a code example without passing threshold as key .
+
+
+@Composable
+fun ScrollToTopBtnWithThreshold(lazyListState: LazyListState, threshold: Int) {
+    val isEnabled by remember { derivedStateOf { lazyListState.firstVisibleItemIndex > threshold } }
+
+    Button(onClick = { /*TODO*/ }, enabled = isEnabled) {
+        Text(text = "Scroll To Top")
+    }
+}
+
+In the code we are checking lazyListState.firstVisibleItemIndex against threshold being passed to composable from outside,
+ imagine we start with threshold value 0 and user scrolls lazyListState.firstVisibleItemIndex to 10 so Scroll To Top
+ Button will be enabled, but after some time the threshold value changes to 20 the Scroll To Top button will still be enabled.
+What is happening here? For the first time remember lambda executes and a derived StateObject is created and remembered
+with the threshold value 0 but when threshold value changes to 20 remember lambda is not executed again with new threshold value
+because remember was not observing for change in threshold so there was no effect on the UI.
+In order to make code work with threshold change, we have to pass threshold as key to remember in order to react to change in threshold .
+Let’s see the code below with this change.
+
+
+@Composable
+fun ScrollToTopBtnWithThresholdAsKey(lazyListState: LazyListState, threshold: Int) {
+    val isEnabled by remember(threshold) { derivedStateOf { lazyListState.firstVisibleItemIndex > threshold } }
+
+    Button(onClick = { /*TODO*/ }, enabled = isEnabled) {
+        Text(text = "Scroll To Top")
+    }
+
+    In the code above when threshold value changes the remembered lambda is executed again and new StateObject is created with
+    new threshold value and cached at the place of old one.
+    Generally change in threshold is to happen less frequently than index changes .
+    derivedStateOf uses input values to calculate an output value, when more than one input values are used to calculate derived
+    value and the one of the values changes less frequently than other input value then that less frequently changed value
+     should be added as key to remember block
+
+     When should we not use derivedStateOf? and prefer remember(keys) over derivedStateOf?
+     When the input value changes as much as the output value then we should not use derivedStateOf . e.g a use-case can be to show
+     full name combining firstName and lastName. In this case output will change as much as the input changes so we can use remember
+     passing in firstName and lastName as keys and lambda will provide output as fullName as in the code below.
+     val fullName = remember(firstName, lastName) {
+         "$firstName $lastName"
+     }
+
+
+     As soon as one of the parameter value changes it will calculate a new full name and remember it.
+     Applications of derivedStateOf.
+     There are many scenarios where derivedStateOf must be used. I will show some of them where I have used it or have seen it somewhere.
+     I used it in a ViewPager example where showing next and prev buttons on ViewPager checking which page indexis visible in order to
+     show/hide these buttons. I have written a detailed story about it you can read from there.
