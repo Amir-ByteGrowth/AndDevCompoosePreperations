@@ -1,0 +1,112 @@
+Follow best practices
+
+bookmark_border
+You might encounter common Compose pitfalls. These mistakes might give you code that seems to run well enough,
+ but can hurt your UI performance.
+Follow best practices to optimize your app on Compose.
+
+1 - Use remember to minimize expensive calculations
+
+Composable functions can run very frequently, as often as for every frame of an animation.
+For this reason, you should do as little calculation in the body of your composable as you can.
+
+An important technique is to store the results of calculations with remember. That way,
+ the calculation runs once, and you can fetch the results whenever they're needed.
+
+For example, here's some code that displays a sorted list of names, but does the sorting in a very expensive way:
+
+
+@Composable
+fun ContactList(
+    contacts: List<Contact>,
+    comparator: Comparator<Contact>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier) {
+        // DON’T DO THIS
+        items(contacts.sortedWith(comparator)) { contact ->
+            // ...
+        }
+    }
+}
+Every time ContactsList is recomposed, the entire contact list is sorted all over again, even though the
+list hasn't changed. If the user scrolls the list, the Composable gets recomposed whenever a new row appears.
+
+To solve this problem, sort the list outside the LazyColumn, and store the sorted list with remember:
+
+
+@Composable
+fun ContactList(
+    contacts: List<Contact>,
+    comparator: Comparator<Contact>,
+    modifier: Modifier = Modifier
+) {
+    val sortedContacts = remember(contacts, comparator) {
+        contacts.sortedWith(comparator)
+    }
+
+    LazyColumn(modifier) {
+        items(sortedContacts) {
+            // ...
+        }
+    }
+}
+Now, the list is sorted once, when ContactList is first composed. If the contacts or comparator change, the sorted list is regenerated.
+ Otherwise, the composable can keep using the cached sorted list.
+
+ 2 - Use lazy layout keys
+
+ Lazy layouts efficiently reuse items, only regenerating or recomposing them when they have to.
+ However, you can help optimize lazy layouts for recomposition.
+
+ @Composable
+ fun NotesList(notes: List<Note>) {
+     LazyColumn {
+         items(
+             items = notes,
+             key = { note ->
+                 // Return a stable, unique key for the note
+                 note.id
+             }
+         ) { note ->
+             NoteRow(note)
+         }
+     }
+ }
+
+ 3 - Use derivedStateOf to limit recompositions
+
+ One risk of using state in your compositions is that, if the state changes rapidly, your UI might get recomposed more than you need it to. For example, suppose you're displaying a scrollable list. You examine the list's state to see which item is the first visible item on the list:
+
+
+ val listState = rememberLazyListState()
+
+ LazyColumn(state = listState) {
+     // ...
+ }
+
+ val showButton = listState.firstVisibleItemIndex > 0
+
+ AnimatedVisibility(visible = showButton) {
+     ScrollToTopButton()
+ }
+ The problem here is, if the user scrolls the list, listState is constantly changing as the user drags their finger. That means the list is constantly being recomposed. However, you don't actually need to recompose it that often—you don't need to recompose until a new item becomes visible at the bottom. So, that's a lot of extra computation, which makes your UI perform badly.
+
+ The solution is to use derived state. Derived state lets you tell Compose which changes of state actually should trigger recomposition. In this case, specify that you care about when the first visible item changes. When that state value changes, the UI needs to recompose, but if the user hasn't yet scrolled enough to bring a new item to the top, it doesn't have to recompose.
+
+
+ val listState = rememberLazyListState()
+
+ LazyColumn(state = listState) {
+     // ...
+ }
+
+ val showButton by remember {
+     derivedStateOf {
+         listState.firstVisibleItemIndex > 0
+     }
+ }
+
+ AnimatedVisibility(visible = showButton) {
+     ScrollToTopButton()
+ }

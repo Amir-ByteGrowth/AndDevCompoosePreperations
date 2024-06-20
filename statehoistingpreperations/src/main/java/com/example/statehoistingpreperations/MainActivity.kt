@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.statehoistingpreperations.derivedstates.DerivedStatesOfToLimitRecomp
 import com.example.statehoistingpreperations.increaseperformancebydeffered.ParentComposable
 import com.example.statehoistingpreperations.increaseperformancebydeffered.ParentComposableWODRS
 import com.example.statehoistingpreperations.ui.theme.CompoosePreperationsTheme
@@ -33,8 +34,9 @@ class MainActivity : ComponentActivity() {
 //                    Greeting("Android")
 //                    ParentComponent()
 //                    ParentComponentLC()
-                    ParentComposable()
+//                    ParentComposable()
 //                    ParentComposableWODRS()
+                    DerivedStatesOfToLimitRecomp()
                 }
             }
         }
