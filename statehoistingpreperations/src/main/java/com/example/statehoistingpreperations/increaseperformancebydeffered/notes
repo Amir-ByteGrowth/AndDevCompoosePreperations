@@ -1,0 +1,19 @@
+
+When a performance issue has been identified, deferring state reads can help.
+Deferring state reads will ensure that Compose re-runs the minimum possible code on recomposition.
+For example, if your UI has state that is hoisted high up in the composable tree and you read the
+state in a child composable, you can wrap the state read in a lambda function. Doing this makes the
+read occur only when it is actually needed
+
+
+To defer reads as long as possible in Jetpack Compose, you can use a combination of remember and derivedStateOf.
+This approach allows you to optimize the recomposition process by deferring the read of a value until it's
+actually needed in a composable. This technique helps to reduce unnecessary recompositions and can improve
+performance, especially in complex UI hierarchies.
+
+Let's integrate this approach into the example we have been working on with CompositionLocal.
+
+Step-by-Step Example
+Define CompositionLocal Providers
+Provide Values at the Top Level
+Consume Values in Child Composables
