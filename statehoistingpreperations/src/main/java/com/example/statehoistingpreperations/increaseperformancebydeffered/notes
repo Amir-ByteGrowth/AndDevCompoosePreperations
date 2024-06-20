@@ -6,6 +6,28 @@ state in a child composable, you can wrap the state read in a lambda function. D
 read occur only when it is actually needed
 
 
+Avoid backwards writes
+
+Compose has a core assumption that you will never write to state that has already been read.
+When you do this, it is called a backwards write and it can cause recomposition to occur on every frame, endlessly.
+
+The following composable shows an example of this kind of mistake.
+
+
+@Composable
+fun BadComposable() {
+    var count by remember { mutableStateOf(0) }
+
+    // Causes recomposition on click
+    Button(onClick = { count++ }, Modifier.wrapContentSize()) {
+        Text("Recompose")
+    }
+
+    Text("$count")
+    count++ // Backwards write, writing to state after it has been read</b>
+}
+
+
 To defer reads as long as possible in Jetpack Compose, you can use a combination of remember and derivedStateOf.
 This approach allows you to optimize the recomposition process by deferring the read of a value until it's
 actually needed in a composable. This technique helps to reduce unnecessary recompositions and can improve
