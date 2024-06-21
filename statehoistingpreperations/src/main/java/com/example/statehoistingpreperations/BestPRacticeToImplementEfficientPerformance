@@ -51,7 +51,8 @@ fun ContactList(
         }
     }
 }
-Now, the list is sorted once, when ContactList is first composed. If the contacts or comparator change, the sorted list is regenerated.
+Now, the list is sorted once, when ContactList is first composed. If the contacts or comparator change,
+the sorted list is regenerated.
  Otherwise, the composable can keep using the cached sorted list.
 
  2 - Use lazy layout keys
@@ -76,7 +77,9 @@ Now, the list is sorted once, when ContactList is first composed. If the contact
 
  3 - Use derivedStateOf to limit recompositions
 
- One risk of using state in your compositions is that, if the state changes rapidly, your UI might get recomposed more than you need it to. For example, suppose you're displaying a scrollable list. You examine the list's state to see which item is the first visible item on the list:
+ One risk of using state in your compositions is that, if the state changes rapidly, your UI
+ might get recomposed more than you need it to. For example, suppose you're displaying a scrollable
+ list. You examine the list's state to see which item is the first visible item on the list:
 
 
  val listState = rememberLazyListState()
@@ -90,9 +93,15 @@ Now, the list is sorted once, when ContactList is first composed. If the contact
  AnimatedVisibility(visible = showButton) {
      ScrollToTopButton()
  }
- The problem here is, if the user scrolls the list, listState is constantly changing as the user drags their finger. That means the list is constantly being recomposed. However, you don't actually need to recompose it that often—you don't need to recompose until a new item becomes visible at the bottom. So, that's a lot of extra computation, which makes your UI perform badly.
+ The problem here is, if the user scrolls the list, listState is constantly changing as the
+ user drags their finger. That means the list is constantly being recomposed. However, you don't
+ actually need to recompose it that often—you don't need to recompose until a new item becomes
+ visible at the bottom. So, that's a lot of extra computation, which makes your UI perform badly.
 
- The solution is to use derived state. Derived state lets you tell Compose which changes of state actually should trigger recomposition. In this case, specify that you care about when the first visible item changes. When that state value changes, the UI needs to recompose, but if the user hasn't yet scrolled enough to bring a new item to the top, it doesn't have to recompose.
+ The solution is to use derived state. Derived state lets you tell Compose which changes of state
+ actually should trigger recomposition. In this case, specify that you care about when the first
+ visible item changes. When that state value changes, the UI needs to recompose, but if the user
+ hasn't yet scrolled enough to bring a new item to the top, it doesn't have to recompose.
 
 
  val listState = rememberLazyListState()
@@ -110,3 +119,42 @@ Now, the list is sorted once, when ContactList is first composed. If the contact
  AnimatedVisibility(visible = showButton) {
      ScrollToTopButton()
  }
+
+ Defer reads as long as possible
+
+ When a performance issue has been identified, deferring state reads can help. Deferring state
+ reads will ensure that Compose re-runs the minimum possible code on recomposition. For example,
+ if your UI has state that is hoisted high up in the composable tree and you read the state in a
+ child composable, you can wrap the state read in a lambda function. Doing this makes the read
+ occur only when it is actually needed. For reference, see the implementation in the Jetsnack
+ sample app. Jetsnack implements a collapsing-toolbar-like effect on its detail screen. To
+ understand why this technique works, see the blog post Jetpack Compose: Debugging Recomposition.
+
+ To achieve this effect, the Title composable needs the scroll offset in order to offset itself
+ using a Modifier. Here's a simplified version of the Jetsnack code before the optimization is made:
+
+
+ Avoid backwards writes
+
+ Compose has a core assumption that you will never write to state that has already been read. When you do this, it is called a backwards write and it can cause recomposition to occur on every frame, endlessly.
+
+ The following composable shows an example of this kind of mistake.
+
+
+ @Composable
+ fun BadComposable() {
+     var count by remember { mutableStateOf(0) }
+
+     // Causes recomposition on click
+     Button(onClick = { count++ }, Modifier.wrapContentSize()) {
+         Text("Recompose")
+     }
+
+     Text("$count")
+     count++ // Backwards write, writing to state after it has been read</b>
+ }
+ This code updates the count at the end of the composable after reading it on the preceding line. If you run this code, you'll see that after you click the button, which causes a recomposition, the counter rapidly increases in an infinite loop as Compose recomposes this Composable, sees a state read that is out of date, and so schedules another recomposition.
+
+ You can avoid backwards writes altogether by never writing to state in Composition. If at all possible, always write to state in response to an event and in a lambda like in the preceding onClick example.
+
+

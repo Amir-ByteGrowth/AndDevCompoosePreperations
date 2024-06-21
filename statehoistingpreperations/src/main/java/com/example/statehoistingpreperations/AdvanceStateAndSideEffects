@@ -1,0 +1,333 @@
+1- to call suspend function safely from composeable use sideeffects because it will cancel whenever it will leaves the composables
+2 - whenever we are using lambda to update launcheffect we should use rememberupdatestateof to check any update in lambda
+3 - calling data asnhcronously can be side effect because recomposition may occur many time to avoid this use launch side effect
+4 - to use suspend function from composable use side effects to execute it safely
+5 - when we are not in scope of composable and we want to launch a coroutine than we can use remember coroutine scope  variable to launch coroutine
+6 - we can make editableusrInpuState to manage states for textfield
+7 - we use list saver for storing object in remembersaveable to get its values when configurations changes
+8 - snapshotflow converts compose state objects into flow
+9 - rule of thumb
+        1- if you are using lambda inside a side-effect consider wrapping it inside a RememberUpdatedState
+        2- The second one is about keys to use with effects . almost every instance used inside a side-effect should be
+        considered as a key, unless you know that the instance is very unlikely to change
+
+ Note* "val cityDetails = remember(viewModel) {viewModel.cityDetails}" just for knowledge
+ 10 -  produceState allows you to convert non-Compose state you get from other layers of hirarechy into
+ compose state, so that composable can recompose
+ 11 - Recommendation from google dev is to produce the screen ui state from in view model class that can access the data layer ,
+ but if your ui is very simple and does not need to communicate with other layers of the app produceState is best alternative
+
+ UI
+
+12 - business logic is written in domain or data layers (repository, usecases network and local database classes )
+13 - ui logic is written in ui layer  (ui layer include views activity or fragments or ui elements and view models)
+ //////
+ State holders
+
+ The classes that are responsible for the production of UI state and contain the necessary logic for that task are called state holders.
+  State holders come in a variety of sizes depending on the scope of the corresponding UI elements that they manage, ranging from a single
+   widget like a bottom app bar to a whole screen or a navigation destination.
+
+ In the latter case, the typical implementation is an instance of a ViewModel, although depending on the requirements of the application,
+  a simple class might suffice. The News app from the case study, for example, uses a NewsViewModel class as a state holder to produce
+   the UI state for the screen displayed in that section.
+
+   Key Point: The ViewModel type is the recommended implementation for the management of screen-level UI state with access to the data
+   layer. Furthermore, it survives configuration changes automatically. ViewModel classes define the logic to be applied to events in
+   the app and produce updated state as a result.
+
+
+//////
+state production
+State production APIs
+
+There are two main APIs used in state production depending on what stage of the pipeline you're in:
+
+Pipeline stage	API
+Input	You should use asynchronous APIs to perform work off the UI thread to keep the UI jank free. For example, Coroutines or Flows in Kotlin,
+and RxJava or callbacks in the Java Programming Language.
+Output	You should use observable data holder APIs to invalidate and rerender the UI when state changes. For example, StateFlow, Compose State, or
+LiveData. Observable data holders guarantee the UI always has a UI state to display on the screen
+
+Of the two, the choice of asynchronous API for input has a greater influence on the nature of the state production pipeline than the
+choice of observable API for output. This is because the inputs dictate the kind of processing that may be applied to the pipeline.
+
+///
+Kotlin coroutines are the recommended way to perform asynchronous operations in Android. An app would usually use coroutines to load things
+in the background when it starts. Jetpack Compose offers APIs that make using coroutines safe within the UI layer. As this app doesn't
+communicate with a backend, you'll use the coroutines' delay function to simulate loading things in the background.
+///
+A side-effect in Compose is a change to the state of the app that happens outside the scope of a composable function.
+For example, opening a new screen when the user taps on a button, or showing a message when the app doesn't have Internet connection.
+//
+if you want to trigger the side effect only once during the ;life cycle of the composable use constant as key for example LaunchedEffect(Unit)
+
+scaffoldState.drawerState.open() must be called within a coroutine. What can you do? openDrawer is a simple callback function, therefore:
+
+You cannot simply call suspend functions in it because openDrawer is not executed in the context of a coroutine.
+You cannot use LaunchedEffect as before because we cannot call composables in openDrawer. We're not in the Composition.
+
+//////
+
+LaunchedEffect vs rememberCoroutineScope
+Using LaunchedEffect in this case wasn't possible because you needed to trigger the call to
+create a coroutine in a regular callback that was outside of the Composition.
+
+Looking back at the landing screen step that used LaunchedEffect, could you use rememberCoroutineScope
+and call scope.launch { delay(); onTimeout(); } instead of using LaunchedEffect?
+
+You could've done that, and it would've seemed to work, but it wouldn't be correct. As explained
+in the Thinking in Compose documentation, composables can be called by Compose at any moment.
+
+LaunchedEffect guarantees that the side-effect will be executed when the call to that composable
+makes it into the Composition. If you use rememberCoroutineScope and scope.launch in the body of
+the LandingScreen, the coroutine will be executed every time LandingScreen is called by Compose
+regardless of whether that call makes it into the Composition or not. Therefore, you'll waste
+resources and you won't be executing this side-effect in a controlled environment.
+
+LaunchedEffect
+LaunchedEffect is a composable function that launches a coroutine when it enters the composition and
+cancels it when it leaves. It is designed to run side effects that should be tied to the lifecycle
+of a composable.
+
+Usage
+
+Tied to Composable Lifecycle: The coroutine started by LaunchedEffect is tied to the lifecycle of the
+composable. If the composable leaves the composition, the coroutine is automatically cancelled.
+Re-execution Based on Keys: LaunchedEffect can re-run its block of code when one of the keys changes.
+
+CoroutineScope
+CoroutineScope provides more flexibility and control over coroutine management but is not tied to
+the lifecycle of a composable. You can create and manage coroutines in any scope you define, such as
+ ViewModelScope, LifecycleScope, or a custom scope.
+
+Usage
+
+Flexible Lifecycle Management: You can manage coroutines across different lifecycles, such as
+activities, fragments, or ViewModels.
+Manual Cancellation: You need to handle cancellation manually, especially when the scope is not
+tied to a composable.
+
+Key Differences
+Lifecycle Management:
+
+LaunchedEffect: Automatically manages the lifecycle tied to a composable.
+CoroutineScope: Provides flexible lifecycle management, often requiring manual cancellation or tying
+to a broader lifecycle like ViewModel.
+Scope Control:
+
+LaunchedEffect: Limited to the composable lifecycle.
+CoroutineScope: Can be used anywhere and tied to any lifecycle or manually managed.
+Re-execution Behavior:
+
+LaunchedEffect: Can re-run the coroutine based on key changes.
+CoroutineScope: Does not have built-in re-execution; you need to handle logic for re-running tasks.
+Summary
+Use LaunchedEffect when you need to run side effects tied to the lifecycle of a composable and manage
+their re-execution based on key changes.
+Use CoroutineScope when you need more control over coroutine lifecycles, such as managing background
+tasks in ViewModels or other non-composable contexts, and when handling manual cancellation is
+acceptable.
+////
+Creating the state holder
+As CraneEditableUserInput is a reusable component, create a regular class as state holder named
+ EditableUserInputState in the same file that looks like the following:
+
+
+// base/EditableUserInput.kt file
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
+class EditableUserInputState(private val hint: String, initialText: String) {
+
+    var text by mutableStateOf(initialText)
+       private set
+
+    fun updateText(newText: String) {
+       text = newText
+    }
+
+    val isHint: Boolean
+        get() = text == hint
+}
+The class should have the following traits:
+
+text is a mutable state of type String, just as you have in CraneEditableUserInput. It's important
+to use mutableStateOf so that Compose tracks changes to the value and recomposes when changes happen.
+text is a var, with a private set so it can't be directly mutated from outside the class. Instead of
+ making this variable public, you can expose an event updateText to modify it, which makes the class
+ the single source of truth.
+The class takes an initialText as a dependency that is used to initialize text.
+The logic to know if the text is the hint or not is in the isHint property that performs the check
+on-demand.
+If the logic gets more complex in the future, you only need to make changes to one class: EditableUserInputState.
+
+Remembering the state holder
+State holders always need to be remembered in order to keep them in the Composition and not create
+a new one every time. It's a good practice to create a method in the same file that does this to
+remove boilerplate and avoid any mistakes that might occur. In the base/EditableUserInput.kt file,
+add this code:
+
+
+// base/EditableUserInput.kt file
+
+@Composable
+fun rememberEditableUserInputState(hint: String): EditableUserInputState =
+    remember(hint) {
+        EditableUserInputState(hint, hint)
+    }
+If you only remember this state, it won't survive activity recreations. To achieve that, you can
+use the rememberSaveable API instead which behaves similarly to remember, but the stored value also
+ survives activity and process recreation. Internally, it uses the saved instance state mechanism.
+
+rememberSaveable does all this with no extra work for objects that can be stored inside a Bundle.
+ That's not the case for the EditableUserInputState class that you created in your project.
+  Therefore, you need to tell rememberSaveable how to save and restore an instance of this class using a Saver.
+
+Creating a custom saver
+A Saver describes how an object can be converted into something which is Saveable.
+ Implementations of a Saver need to override two functions:
+
+save to convert the original value to a saveable one.
+restore to convert the restored value to an instance of the original class.
+For this case, instead of creating a custom implementation of Saver for the EditableUserInputState
+class, you can use some of the existing Compose APIs such as listSaver or mapSaver (that stores the
+values to save in a List or Map) to reduce the amount of code that you need to write.
+
+It's a good practice to place Saver definitions close to the class they work with. Because it needs
+ to be statically accessed, add the Saver for EditableUserInputState in a companion object. In the base/EditableUserInput.kt file, add the implementation of the Saver:
+
+
+// base/EditableUserInput.kt file
+
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+
+class EditableUserInputState(private val hint: String, initialText: String) {
+    var text by mutableStateOf(initialText)
+
+    val isHint: Boolean
+        get() = text == hint
+
+    companion object {
+        val Saver: Saver<EditableUserInputState, *> = listSaver(
+            save = { listOf(it.hint, it.text) },
+            restore = {
+                EditableUserInputState(
+                    hint = it[0],
+                    initialText = it[1],
+                )
+            }
+        )
+    }
+}
+In this case, you use a listSaver as an implementation detail to store and restore an instance of EditableUserInputState in the saver.
+
+Now, you can use this saver in rememberSaveable (instead of remember) in the rememberEditableUserInputState method you created before:
+
+
+// base/EditableUserInput.kt file
+import androidx.compose.runtime.saveable.rememberSaveable
+
+@Composable
+fun rememberEditableUserInputState(hint: String): EditableUserInputState =
+    rememberSaveable(hint, saver = EditableUserInputState.Saver) {
+        EditableUserInputState(hint, hint)
+    }
+
+    //////
+    DisposableEffect is meant for side effects that need to be cleaned up after the keys change or
+    the composable leaves the Composition. The final rememberMapViewWithLifecycle code does exactly
+    that. Implement the following lines in your project:
+ In Jetpack Compose, DisposableEffect is a composable function used to perform side effects that
+  require cleanup when the composable leaves the composition. It provides a way to handle resources
+  that need to be explicitly disposed of, such as listeners, subscriptions, or any other resources
+  that must be cleaned up to avoid memory leaks.
+
+ Usage
+ DisposableEffect is useful for side effects that:
+
+ Need to be set up when the composable enters the composition.
+ Require cleanup when the composable leaves the composition.
+ It takes a key (or multiple keys) to determine when the effect should be restarted or disposed of,
+  and it provides a cleanup block that is executed when the composable leaves the composition or
+  when the keys change.
+
+  @Composable
+  fun rememberMapViewWithLifecycle(): MapView {
+      val context = LocalContext.current
+      val mapView = remember {
+          MapView(context).apply {
+              id = R.id.map
+          }
+      }
+
+      val lifecycle = LocalLifecycleOwner.current.lifecycle
+      DisposableEffect(key1 = lifecycle, key2 = mapView) {
+          // Make MapView follow the current lifecycle
+          val lifecycleObserver = getMapLifecycleObserver(mapView)
+          lifecycle.addObserver(lifecycleObserver)
+          onDispose {
+              lifecycle.removeObserver(lifecycleObserver)
+          }
+      }
+
+      return mapView
+  }
+
+
+Explanation
+LocalContext:
+
+LocalContext.current provides the current Context in the composable.
+DisposableEffect:
+
+DisposableEffect(Unit) ensures that the side effect is set up when the composable enters the composition and disposed of when it leaves.
+The lambda block inside DisposableEffect is executed when the composable is composed.
+Registering the Receiver:
+
+A BroadcastReceiver is created to listen for connectivity changes.
+The receiver is registered with an IntentFilter for connectivity change broadcasts.
+onDispose:
+
+The onDispose block is called when the composable leaves the composition, ensuring the receiver is unregistered to avoid memory leaks.
+Comparison with LaunchedEffect
+While DisposableEffect is used for side effects that require cleanup, LaunchedEffect is used for launching coroutines tied to the composable lifecycle.
+
+Example: Using LaunchedEffect
+
+kotlin
+Copy code
+@Composable
+fun FetchDataEffect(dataSource: DataSource) {
+    LaunchedEffect(dataSource) {
+        val data = dataSource.fetchData()
+        // Use the fetched data
+    }
+}
+Key Differences
+Purpose:
+
+DisposableEffect: Handles setup and cleanup of resources, such as listeners or subscriptions.
+LaunchedEffect: Launches coroutines tied to the lifecycle of the composable.
+Cleanup:
+
+DisposableEffect: Provides an explicit onDispose block for cleanup.
+LaunchedEffect: Coroutines are automatically canceled when the composable leaves the composition.
+Typical Use Cases:
+
+DisposableEffect: Setting up and tearing down resources, such as BroadcastReceivers, sensors, or other listeners.
+LaunchedEffect: Performing side effects that do not require explicit cleanup, such as fetching data or running animations.
+Summary
+DisposableEffect in Jetpack Compose is essential for managing side effects that require explicit
+cleanup when the composable leaves the composition. It ensures resources like listeners, receivers,
+ and subscriptions are properly disposed of, preventing memory leaks. Use DisposableEffect for
+  handling setup and cleanup tasks, and LaunchedEffect for launching coroutines tied to
+  the composable's lifecycle.
+
+
+
+
+
