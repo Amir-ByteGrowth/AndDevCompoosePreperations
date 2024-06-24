@@ -16,10 +16,10 @@ dependencyResolutionManagement {
 rootProject.name = "CompoosePreperations"
 include(":app")
 include(":basiclayoutpractice")
-include(":jetnewsvariablesize")
 include(":navigationgraphpracticew")
 include(":hiltwithcleannavgraph")
 include(":owlpractice")
 include(":vaultspayrevamp")
 include(":statehoistingpreperations")
 include(":cranecodelabclone")
+include(":navigationandfunctions")
