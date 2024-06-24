@@ -1,0 +1,19 @@
+Higher-order functions and lambdas
+
+Kotlin functions are first-class, which means they can be stored in variables and data structures,
+ and can be passed as arguments to and returned from other higher-order functions. You can perform
+ any operations on functions that are possible for other non-function values.
+
+ Higher-order functions
+ A higher-order function is a function that takes functions as parameters, or returns a function.
+
+Function types﻿
+Kotlin uses function types, such as (Int) -> String, for declarations that deal with
+functions: val onClick: () -> Unit = ....
+These types have a special notation that corresponds to the signatures of the functions - their
+ parameters and return values:
+All function types have a parenthesized list of parameter types and a return type: (A, B) -> C denotes a type that represents functions that take two arguments of types A and B and return a value of type C. The list of parameter types may be empty, as in () -> A. The Unit return type cannot be omitted.
+Function types can optionally have an additional receiver type, which is specified before the dot in the notation: the type A.(B) -> C represents functions that can be called on a receiver object A with a parameter B and return a value C. Function literals with receiver are often used along with these types.
+Suspending functions belong to a special kind of function type that have a suspend modifier in their notation, such as suspend () -> Unit or suspend A.(B) -> C.
+The function type notation can optionally include names for the function parameters: (x: Int, y: Int) -> Point. These names can be used for documenting the meaning of the parameters.
+To specify that a function type is nullable, use parentheses as follows: ((Int, Int) -> Int)?.
