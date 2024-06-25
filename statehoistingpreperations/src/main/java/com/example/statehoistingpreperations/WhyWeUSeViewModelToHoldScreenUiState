@@ -1,0 +1,159 @@
+Why we use view model to store screen ui state
+1- it survives configuration changes (longer life time than screen)
+2- trigger business logic requests that can survive during configuration changes
+3- it can be easily integrated easily with other jetpack libraries like navigation graph
+"viewmodel are going top be cast in memory or kept in memory whenever that destination is part of
+back stack so we can easily move back and forth data will be available when we come back"
+4- viewmodel is completely destroyed from memory whenever destination is removed from backstack
+5- viewmodel can easily be integrated with other libraries like hilt so we can easily inject dependencies
+from data layer or domain layers
+
+List of best practices to use viewmodel
+1- use it at screen level don't use it to manage the complexity of reuse able UI like chip groups or forms.
+because we gonna get the same instance of viewmodel for different ui elements under the same scope.
+2- they should not know about the UI implementation details ( they should be generic enough to accommodate
+any type of UI, they could be a wearable, a tablet or even chromebook. so keep the api surface and screen ui
+state as generic as possible.
+3- don't hold references of lifecycle-related apis such as context or resources because that will
+ cause memory leaks, remember they will live longer than screen. don't pass them around they are managed
+ by framework so keep them as close as possible to activity, fragment or screen-level composable
+
+ "So if the Business logic complexity is handled in screen level state holders and implemented with
+ ViewModels the ui logic should be handled in UI itself or plain state holder class. what to use here
+ depends upon the complexity of screen"
+ Example
+ "@Composable
+  fun <T> NiaDropdownMenuButton (
+  items: List<T>,
+  var expanded
+  by remember { mutableStateOf(false) }
+  Box (modifier = modifier) {
+  NiaOutlinedButton (
+  onClick = { expanded = true },
+  NiaDropdownMenu (
+  expanded = expanded,
+  onDismissRequest"
+
+  Your own
+  state holder
+  @Stable
+  class NiaAppState( val navController: NavHostController,
+  val windowSizeClass: WindowSizeClass
+  { Your own
+  state holder
+  val currentDestination: NavDestination?
+  @Composable get() = navController
+  •currentBackStackEntryAsState() .value?. destination
+  val shouldShowBot tomBar: Boolean
+  get () = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+  windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
+  fun navigate(...) {... }
+  fun onBackClick(){....}
+  }
+  ////
+  Plain classes best practice
+  1- we can use plain classes to simplify our ui but actually they are recommended in reuseable ui
+  components so that you can hoist out the internal state if needed
+  2- they actually can hold references of life-cycle-related apis, they are scoped to ui, they are
+  going to follow its lifecycle so that for example if activity is recreated due to its configuration
+  changes you asre going to get new instance of this class
+
+  Note* " we could say that business logic and screen ui state should be managed by a screen level state
+  holder viewModel in this case, and then the ui logic and the ui elements state is going to be handled
+  in ui itself or plain class. some time ui elements state needs to be handled in viewmodels to manange
+  business logic"
+
+  How to produce screen ui state?
+  UI state is the output of a state holder processing some inputs and those inputs can be events local
+  or external source of state change. ui state should be exposed as observeable data holder and this
+  guarantee that the ui always has a UI stat to render on the screen
+
+  class DiceRollViewModel : ViewModel () {
+  private val _uiState = MutableStateFlow DiceRollUiState())
+  val uiState: StateFlow<DiceRollUiState> = _uiState.asStateFlow()
+
+  fun rollDice () {
+  _uiState update f currentState -> currentState. copy (
+  firstDiceValue = Random. nextInt (1..6),
+  secondDiceValue = Random. nextInt (1..6) ,
+  numberOfRolls = currentState.numberOfRolls + 1, )}}}
+
+  here more important for me to remember update function
+
+for getting data from external sources
+  class DiceRollViewModel(
+  userRepository: UserRepository
+  ) : ViewModel) {
+  val userUiState: StateFlow<String> =
+  userRepository.userStream.map { user -> user. name
+  •statein
+  scope = viewModelScope,
+  started = SharingStarted. WhileSubscribed (5000),
+  initialValue = "")
+  }
+
+  for combining external and internal sources
+
+  sealed interface DiceRollUiState {
+  object Loading : DiceRollUiState
+  data class DiceRo11( val username: String, val number0fRolls: Int,
+  val firstDiceValue: Int? = null,
+  val secondDiceValue: Int? = null,
+  ) : DiceRollUiState
+  object LogUserIn : DiceRollUiState
+  }
+
+  class DiceRollViewModel(userRepository: UserRepository) : ViewModel() {
+  private val rollState = MutableStateFlow(RollState())
+  val uiState: StateFlow<DiceRollUiState> =
+  val uiState: StateFlow<DiceRollUiState> =
+  combine (rollState, userRepository.userStream) { roll, user -›
+  if (user. name.isEmpty()) {
+  DiceRollUiState. LogUserIn
+  } else {
+  DiceRollUiState.DiceRoll(
+  user.name, user.numberOfRolls, roll.firstDiceValue, roll.secondDiceValue)
+  }
+  }• stateIn(
+   scope = viewModelScope,
+   started = SharingStarted WhileSubscribed (5000),
+   initialValue = DiceRollUiState.Loading
+   )
+  fun rollDice() { ...}
+  }
+  }
+  ///////////////////////
+  UI
+  @Composable
+  fun DiceRollUI(viewModel: DiceRollViewModel = viewModel()) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  DiceRollUI(uiState, { viewModel.rollDice () })
+ @Composable
+ fun DiceRollUI(uiState: DiceRollUiState, onRollDice: () -> Unit) {
+     Column (Modifier fillMaxSize()) {
+        when (uiState) {
+            is Success →> {
+            Text(uiState.firstDiceValue. toString())
+            Spacer (modifier = Modifier height (8.dp))
+            Text(uiState.secondDiceValue.toString())
+            Spacer (modifier = Modifier height (8. dp))
+            Button(onClick = onRollDice) { Text("Roll dice") }
+        }
+    }
+ }
+
+
+/////
+collecting flows in lifecycle-aware manner they depends upon input
+
+Source                       Source Api                                      Exposed Type
+1-Local or OneShot Apis      Private MutableStateFlow or Compose State       State Flow or Compose State
+2- External Streams          Flow using state in operator                    StateFlow
+3- Both                      Multiple  combining both using statein          StateFlow
+
+
+
+
+
+
+

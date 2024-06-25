@@ -39,24 +39,24 @@ fun AccountsScreen( onAccountClick: (String) -> Unit = {},) {
 
 
 
-//
-//@Composable
-//fun SingleAccountScreen(
-//    accountType: String? = UserData.accounts.first().name
-//) {
-//    val account = remember(accountType) { UserData.getAccount(accountType) }
-//    StatementBody(
-//        items = listOf(account),
-//        colors = { account.color },
-//        amounts = { account.balance },
-//        amountsTotal = account.balance,
-//        circleLabel = account.name,
-//    ) { row ->
-//        AccountRow(
-//            name = row.name,
-//            number = row.number,
-//            amount = row.balance,
-//            color = row.color
-//        )
-//    }
-//}
+
+@Composable
+fun SingleAccountScreen(
+    accountType: String? = UserData.accounts.first().name
+) {
+    val account = remember(accountType) { UserData.getAccount(accountType) }
+    StatementBody(
+        items = listOf(account),
+        colors = { account.color },
+        amounts = { account.balance },
+        amountsTotal = account.balance,
+        circleLabel = account.name,
+    ) { row ->
+        AccountRow(
+            name = row.name,
+            number = row.number,
+            amount = row.balance,
+            color = row.color
+        )
+    }
+}

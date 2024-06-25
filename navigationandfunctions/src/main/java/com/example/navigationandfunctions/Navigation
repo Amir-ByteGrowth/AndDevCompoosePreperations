@@ -1,0 +1,45 @@
+The 3 main parts of Navigation are the NavController, NavGraph, and NavHost. The NavController is
+ always associated with a single NavHost composable. The NavHost acts as a container and is
+ responsible for displaying the current destination of the graph. As you navigate between composables,
+  the content of the NavHost is automatically recomposed. It also links the NavController with a
+  navigation graph ( NavGraph) that maps out the composable destinations to navigate between.
+  It is essentially a collection of fetchable destinations
+
+
+  Launching a single copy of a destination
+  To fix the first issue and make sure there will be at most one copy of a given destination on the
+  top of the back stack, Compose Navigation API provides a launchSingleTop flag you can pass to your
+  navController.navigate() action, like this:
+
+  navController.navigate(route) { launchSingleTop = true }
+  fun NavHostController.navigateSingleTopTo(route: String) =
+      this.navigate(route) { launchSingleTop = true }
+
+
+ Controlling the navigation options and back stack state
+ Apart from launchSingleTop, there are also other flags that you can use from the NavOptionsBuilder
+ to control and customize your navigation behavior even more. Since our RallyTabRow acts similarly
+ to a BottomNavigation, you should also think about whether you want to save and restore a
+ destination state when you navigate to and from it. For example, if you scroll to the bottom of
+ Overview and then navigate to Accounts and back, do you want to keep the scroll position? Do you
+  want to re-tap on the same destination in the RallyTabRow to reload your screen state or not?
+  These are all valid questions and should be determined by the requirements of your own app design.
+
+ We will cover some additional options that you can use within the same navigateSingleTopTo
+ extension function:
+
+ launchSingleTop = true - as mentioned, this makes sure there will be at most one copy of a given
+ destination on the top of the back stack
+ In Rally app, this would mean that re-tapping the same tab multiple times doesn't launch multiple
+ copies of the same destination
+ popUpTo(startDestination) { saveState = true } - pop up to the start destination of the graph to
+ avoid building up a large stack of destinations on the back stack as you select tabs
+ In Rally, this would mean that pressing the back arrow from any destination would pop the entire
+ back stack to Overview
+ restoreState = true - determines whether this navigation action should restore any state previously
+ saved by PopUpToBuilder.saveState or the popUpToSaveState attribute. Note that, if no state was
+ previously saved with the destination ID being navigated to, this has no effect
+ In Rally, this would mean that, re-tapping the same tab would keep the previous data and user state
+ on the screen without reloading it again
+
+
