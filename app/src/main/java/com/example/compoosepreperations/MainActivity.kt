@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.compoosepreperations.ui.screens.LoginScreen
+import com.example.compoosepreperations.ui.screens.launcheffects.LaunchEffectsScreen
+import com.example.compoosepreperations.ui.screens.launcheffects.RememberUpdateStateEffect
 import com.example.compoosepreperations.ui.screens.movies.ChangeFromOutSide
 import com.example.compoosepreperations.ui.screens.movies.MoviesScreen
 import com.example.compoosepreperations.ui.theme.CompoosePreperationsTheme
@@ -27,7 +29,9 @@ class MainActivity : ComponentActivity() {
                 ) {
 //                    Greeting("Android")
 //                    LoginScreen()
-                    ChangeFromOutSide()
+//                    ChangeFromOutSide()
+//                    LaunchEffectsScreen()
+                    RememberUpdateStateEffect()
                 }
             }
         }
@@ -42,10 +46,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CompoosePreperationsTheme {
-        Greeting("Android")
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    CompoosePreperationsTheme {
+//        Greeting("Android")
+//    }
+//}

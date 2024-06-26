@@ -1,0 +1,107 @@
+Skipping if the inputs haven't changed
+
+During recomposition, some eligible composable functions can have their execution be skipped
+entirely if their inputs have not changed from the previous composition.
+
+A composable function is eligible for skipping unless:
+
+The function has a non-Unit return type
+The function is annotated with @NonRestartableComposable or @NonSkippableComposable
+A required parameter is of a non-stable type
+
+
+In order for a type to be considered stable it must comply with the following contract:
+
+The result of equals for two instances will forever be the same for the same two instances.
+If a public property of the type changes, Composition will be notified.
+All public property types are also stable.
+There are some important common types that fall into this contract that the Compose compiler will
+treat as stable, even though they are not explicitly marked as stable by using the @Stable annotation:
+
+All primitive value types: Boolean, Int, Long, Float, Char, etc.
+Strings
+All function types (lambdas)
+All of these types are able to follow the contract of stable because they are immutable. Since
+immutable types never change, they never have to notify Composition of the change, so it is much
+easier to follow this contract.
+One notable type that is stable but is mutable is Compose’s MutableState type. If a value is held in
+a MutableState, the state object overall is considered to be stable as Compose will be notified of
+any changes to the .value property of State.
+
+Compose considers a type stable only if it can prove it. For example, an interface is generally
+treated as not stable, and types with mutable public properties whose implementation could be
+immutable are not stable either.
+
+If Compose is not able to infer that a type is stable, but you want to force Compose to treat
+it as stable, mark it with the @Stable annotation.
+
+
+// Marking the type as stable to favor skipping and smart recompositions.
+@Stable
+interface UiState<T : Result<T>> {
+    val value: T?
+    val exception: Throwable?
+
+    val hasError: Boolean
+        get() = exception != null
+}
+
+In the code snippet above, since UiState is an interface, Compose could ordinarily consider this
+type to be not stable. By adding the @Stable annotation, you tell Compose that this type is stable,
+ allowing Compose to favor smart recompositions. This also means that Compose will treat all its
+ implementations as stable if the interface is used as the parameter type.
+
+"Primitive data types are immutable because their values cannot be changed after they are created.
+Operations that modify these values result in the creation of new values, not the alteration of
+existing ones. This immutability ensures predictable behavior and efficient memory usage in
+programming languages like Java and Kotlin"
+
+///////
+Side-effects in Compose
+
+bookmark_border
+A side-effect is a change to the state of the app that happens outside the scope of a composable
+function. Due to composables' lifecycle and properties such as unpredictable recompositions,
+executing recompositions of composables in different orders, or recompositions that can be discarded,
+composables should ideally be side-effect free.
+
+However, sometimes side-effects are necessary, for example, to trigger a one-off event such as
+showing a snackbar or navigate to another screen given a certain state condition. These actions
+should be called from a controlled environment that is aware of the lifecycle of the composable.
+In this page, you'll learn about the different side-effect APIs Jetpack Compose offers.
+
+
+LaunchedEffect: run suspend functions in the scope of a composable
+
+To call suspend functions safely from inside a composable, use the LaunchedEffect composable.
+When LaunchedEffect enters the Composition, it launches a coroutine with the block of code passed
+as a parameter. The coroutine will be cancelled if LaunchedEffect leaves the composition.
+ If LaunchedEffect is recomposed with different keys (see the Restarting Effects section below),
+ the existing coroutine will be cancelled and the new suspend function will be launched in a new coroutine.
+
+rememberCoroutineScope: obtain a composition-aware scope to launch a coroutine outside a composable
+As LaunchedEffect is a composable function, it can only be used inside other composable functions.
+ In order to launch a coroutine outside of a composable, but scoped so that it will be automatically
+ canceled once it leaves the composition, use rememberCoroutineScope. Also use rememberCoroutineScope
+ whenever you need to control the lifecycle of one or more coroutines manually, for example,
+ cancelling an animation when a user event happens.
+
+ rememberUpdatedState is a function that helps ensure a stable reference to a value that might
+ change over time, particularly when dealing with lambda functions or state updates within composition
+  scopes. This function is useful for preserving the latest value of a state while avoiding
+  unnecessary recompositions
+
+  Purpose and Usage
+  The primary purpose of rememberUpdatedState is to capture and remember a mutable state or a value
+  that might be updated frequently, ensuring that the latest value is always used in a lambda or
+  composable function without triggering recomposition.
+
+  When to Use rememberUpdatedState
+  Callback Functions:
+
+  When you need to pass a lambda function or callback to another composable or side effect that
+  should always use the latest state value.
+  Effect Scopes:
+
+  Inside side effects like LaunchedEffect or DisposableEffect, where the logic should reflect the
+  latest state values without restarting the effect each time the state changes.
