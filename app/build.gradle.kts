@@ -66,4 +66,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    implementation ("io.coil-kt:coil-compose:2.1.0")
+    //dragabl list
+    implementation ("com.github.armcha:DragDropList:1.0.0")
 }

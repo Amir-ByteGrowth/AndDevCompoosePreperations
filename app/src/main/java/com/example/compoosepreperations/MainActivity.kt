@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.compoosepreperations.ui.screens.LoginScreen
+import com.example.compoosepreperations.ui.screens.movies.ChangeFromOutSide
+import com.example.compoosepreperations.ui.screens.movies.MoviesScreen
 import com.example.compoosepreperations.ui.theme.CompoosePreperationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,7 +26,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 //                    Greeting("Android")
-                    LoginScreen()
+//                    LoginScreen()
+                    ChangeFromOutSide()
                 }
             }
         }
