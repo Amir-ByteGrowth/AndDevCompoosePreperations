@@ -1,6 +1,7 @@
 package com.example.compoosepreperations
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,12 +10,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.compoosepreperations.ui.screens.LoginScreen
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.LifecycleOwner
+import com.example.compoosepreperations.ui.screens.disposablesideeffects.DisposableSideEffectHomeScreen
 import com.example.compoosepreperations.ui.screens.launcheffects.LaunchEffectsScreen
-import com.example.compoosepreperations.ui.screens.launcheffects.RememberUpdateStateEffect
-import com.example.compoosepreperations.ui.screens.movies.ChangeFromOutSide
-import com.example.compoosepreperations.ui.screens.movies.MoviesScreen
+import com.example.compoosepreperations.ui.screens.producestateeffectscreen.ProduceEffectScreen
+import com.example.compoosepreperations.ui.screens.producestateeffectscreen.UserProduceStateEffect
+import com.example.compoosepreperations.ui.screens.rememberupdatedstateeffect.MainCompo
+import com.example.compoosepreperations.ui.screens.rememberupdatedstateeffect.RememberUpdateStateEffect
+import com.example.compoosepreperations.ui.screens.sideeffectsScreen.SideEffectsScreen
 import com.example.compoosepreperations.ui.theme.CompoosePreperationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,7 +35,18 @@ class MainActivity : ComponentActivity() {
 //                    LoginScreen()
 //                    ChangeFromOutSide()
 //                    LaunchEffectsScreen()
-                    RememberUpdateStateEffect()
+//                    RememberUpdateStateEffect()
+//                    MainCompo()
+
+//                    DisposableSideEffectHomeScreen(startEvent = {
+//                        Log.d("LifeCycleEvent","OnStart")
+//                    }, stopEvent = {
+//                        Log.d("LifeCycleEvent","OnStop")
+//                    }, lifecycleOwner = LocalLifecycleOwner.current)
+
+//                    SideEffectsScreen()
+//                    ProduceEffectScreen()
+                    UserProduceStateEffect()
                 }
             }
         }
@@ -45,6 +60,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         modifier = modifier
     )
 }
+
+
 
 //@Preview(showBackground = true)
 //@Composable

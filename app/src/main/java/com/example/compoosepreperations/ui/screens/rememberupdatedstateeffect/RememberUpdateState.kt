@@ -1,4 +1,4 @@
-package com.example.compoosepreperations.ui.screens.launcheffects
+package com.example.compoosepreperations.ui.screens.rememberupdatedstateeffect
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box

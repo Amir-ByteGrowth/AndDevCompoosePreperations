@@ -105,3 +105,216 @@ As LaunchedEffect is a composable function, it can only be used inside other com
 
   Inside side effects like LaunchedEffect or DisposableEffect, where the logic should reflect the
   latest state values without restarting the effect each time the state changes.
+
+  DisposableEffect: effects that require cleanup
+
+  For side effects that need to be cleaned up after the keys change or if the composable leaves the
+   Composition, use DisposableEffect. If the DisposableEffect keys change, the composable needs to
+   dispose (do the cleanup for) its current effect, and reset by calling the effect again.
+
+  As an example, you might want to send analytics events based on Lifecycle events by using a
+  LifecycleObserver. To listen for those events in Compose, use a DisposableEffect to register and
+  unregister the observer when needed.
+
+
+  SideEffect: publish Compose state to non-Compose code
+
+  To share Compose state with objects not managed by compose, use the SideEffect composable.
+  Using a SideEffect guarantees that the effect executes after every successful recomposition.
+   On the other hand, it is incorrect to perform an effect before a successful recomposition is
+   guaranteed, which is the case when writing the effect directly in a composable.
+
+For example, your analytics library might allow you to segment your user population by attaching custom metadata ("user properties" in this example) to all subsequent analytics events. To communicate the user type of the current user to your analytics library, use SideEffect to update its value.
+
+
+@Composable
+fun rememberFirebaseAnalytics(user: User): FirebaseAnalytics {
+    val analytics: FirebaseAnalytics = remember {
+        FirebaseAnalytics()
+    }
+
+    // On every successful composition, update FirebaseAnalytics with
+    // the userType from the current User, ensuring that future analytics
+    // events have this metadata attached
+    SideEffect {
+        analytics.setUserProperty("userType", user.userType)
+    }
+    return analytics
+}
+
+In Jetpack Compose, the SideEffect composable function allows you to publish Compose state to
+non-Compose code. This can be particularly useful when you need to interact with imperative APIs or
+perform actions that are outside the declarative scope of Compose, such as logging, analytics,
+or updating values in a ViewModel.
+
+Using SideEffect in Jetpack Compose
+The SideEffect composable function is a part of the Compose runtime and is designed to run a piece
+of code every time the composition is applied. This allows you to bridge the gap between the
+declarative Compose world and the imperative side effects that you need to handle.
+
+
+produceState: convert non-Compose state into Compose state
+
+produceState launches a coroutine scoped to the Composition that can push values into a returned State.
+Use it to convert non-Compose state into Compose state, for example bringing external
+subscription-driven state such as Flow, LiveData, or RxJava into the Composition.
+The producer is launched when produceState enters the Composition, and will be cancelled when it
+ leaves the Composition. The returned State conflates; setting the same value won't trigger a recomposition.
+ Even though produceState creates a coroutine, it can also be used to observe non-suspending sources of data.
+ To remove the subscription to that source
+
+ @Composable
+ fun loadNetworkImage(
+     url: String,
+     imageRepository: ImageRepository = ImageRepository()
+ ): State<Result<Image>> {
+
+     // Creates a State<T> with Result.Loading as initial value
+     // If either `url` or `imageRepository` changes, the running producer
+     // will cancel and will be re-launched with the new inputs.
+     return produceState<Result<Image>>(initialValue = Result.Loading, url, imageRepository) {
+
+         // In a coroutine, can make suspend calls
+         val image = imageRepository.load(url)
+
+         // Update State with either an Error or Success result.
+         // This will trigger a recomposition where this State is read
+         value = if (image == null) {
+             Result.Error
+         } else {
+             Result.Success(image)
+         }
+     }
+ }
+
+ Key Point: Under the hood, produceState makes use of other effects! It holds a result variable
+  using remember { mutableStateOf(initialValue) }, and triggers the producer block in a LaunchedEffect.
+  Whenever value is updated in the producer block, the result state is updated to the new value.
+
+ You can easily create your own effects building on top of the existing APIs.
+
+ derivedStateOf: convert one or multiple state objects into another state
+
+ In Compose, recomposition occurs each time an observed state object or composable input changes.
+ A state object or input may be changing more often than the UI actually needs to update,
+  leading to unnecessary recomposition.
+  You should use the derivedStateOf function when your inputs to a composable are changing more often
+  than you need to recompose. This often occurs when something is frequently changing, such as a scroll
+  position, but the composable only needs to react to it once it crosses a certain threshold.
+   derivedStateOf creates a new Compose state object you can observe that only updates as much as you need.
+   In this way, it acts similarly to the Kotlin Flows distinctUntilChanged() operator.
+
+   // DO NOT USE. Incorrect usage of derivedStateOf.
+   var firstName by remember { mutableStateOf("") }
+   var lastName by remember { mutableStateOf("") }
+
+   val fullNameBad by remember { derivedStateOf { "$firstName $lastName" } } // This is bad!!!
+   val fullNameCorrect = "$firstName $lastName" // This is correct
+
+
+snapshotFlow: convert Compose's State into Flows
+
+Use snapshotFlow to convert State<T> objects into a cold Flow. snapshotFlow runs its block when collected and emits the result of the State objects read in it. When one of the State objects read inside the snapshotFlow block mutates, the Flow will emit the new value to its collector if the new value is not equal to the previous emitted value (this behavior is similar to that of Flow.distinctUntilChanged).
+
+The following example shows a side effect that records when the user scrolls past the first item in a list to analytics:
+
+
+val listState = rememberLazyListState()
+
+LazyColumn(state = listState) {
+    // ...
+}
+
+LaunchedEffect(listState) {
+    snapshotFlow { listState.firstVisibleItemIndex }
+        .map { index -> index > 0 }
+        .distinctUntilChanged()
+        .filter { it == true }
+        .collect {
+            MyAnalyticsService.sendScrolledPastFirstItemEvent()
+        }
+}
+In the code above, listState.firstVisibleItemIndex is converted to a Flow that can benefit from the power of Flow's operators.
+
+
+n Jetpack Compose, snapshotFlow is a utility function from the Kotlin coroutines library that allows you to create a flow that emits the latest value from a State or a MutableState object whenever the flow collects a new value. This is particularly useful for integrating with Compose's state management system to observe state changes reactively.
+
+Here's a basic example of how you might use snapshotFlow in a Jetpack Compose application:
+
+kotlin
+Copy code
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.snapshotFlow
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+
+fun CounterScreen() {
+    // MutableState to hold the count value
+    var count by remember { mutableStateOf(0) }
+
+    // Create a snapshotFlow from the count State
+    val countFlow = snapshotFlow { count }
+
+    // Side effect to collect and log the count whenever it changes
+    LaunchedEffect(countFlow) {
+        countFlow.collect { value ->
+            println("Count changed: $value")
+        }
+    }
+
+    // Composable UI
+    // Increment button
+    Button(onClick = { count++ }) {
+        Text("Increment")
+    }
+}
+
+
+Restarting effects
+
+Some effects in Compose, like LaunchedEffect, produceState, or DisposableEffect, take a variable number of arguments, keys, that are used to cancel the running effect and start a new one with the new keys.
+
+The typical form for these APIs is:
+
+
+EffectName(restartIfThisKeyChanges, orThisKey, orThisKey, ...) { block }
+Due to the subtleties of this behavior, problems can occur if the parameters used to restart the effect are not the right ones:
+
+Restarting effects less than they should could cause bugs in your app.
+Restarting effects more than they should could be inefficient.
+As a rule of thumb, mutable and immutable variables used in the effect block of code should be added as parameters to the effect composable. Apart from those, more parameters can be added to force restarting the effect. If the change of a variable shouldn't cause the effect to restart, the variable should be wrapped in rememberUpdatedState. If the variable never changes because it's wrapped in a remember with no keys, you don't need to pass the variable as a key to the effect.
+
+Key Point: Variables used in an effect should be added as a parameter of the effect composable, or use rememberUpdatedState.
+In the DisposableEffect code shown above, the effect takes as a parameter the lifecycleOwner used in its block, because any change to them should cause the effect to restart.
+
+
+@Composable
+fun HomeScreen(
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    onStart: () -> Unit, // Send the 'started' analytics event
+    onStop: () -> Unit // Send the 'stopped' analytics event
+) {
+    // These values never change in Composition
+    val currentOnStart by rememberUpdatedState(onStart)
+    val currentOnStop by rememberUpdatedState(onStop)
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            /* ... */
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+}
+currentOnStart and currentOnStop are not needed as DisposableEffect keys, because their value never change in Composition due to the usage of rememberUpdatedState. If you don't pass lifecycleOwner as a parameter and it changes, HomeScreen recomposes, but the DisposableEffect isn't disposed of and restarted. That causes problems because the wrong lifecycleOwner is used from that point onward.
+
+Constants as keys
+
+You can use a constant like true as an effect key to make it follow the lifecycle of the call site. There are valid use cases for it, like the LaunchedEffect example shown above. However, before doing that, think twice and make sure that's what you need.
