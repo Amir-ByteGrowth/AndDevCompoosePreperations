@@ -1,0 +1,30 @@
+Data To UI Phases
+ jetpack compose has three phases to convert data to UI.
+    1- Composition (what to show) (here we build the code and build ui tree)
+    2- Layout      (Where to place it)
+        Three things are done here
+            1- Measure children size
+            2- Decide Own Size
+            3- Place children
+            (at the end each node will have h,w and x,y positions where to place it. each node is visited only once)
+    3- Drawing     (How to render it)
+        Things are drawn from top to bottom (Row( Image,Column (Text,Text)))
+
+The order of these phases is generally the same, allowing data to flow in one direction from
+composition to layout to drawing to produce a frame (also known as unidirectional data flow).
+BoxWithConstraints and LazyColumn and LazyRow are notable exceptions, where the composition of its
+children depends on the parent's layout phase.
+
+ Composition
+    In the composition phase, the Compose runtime executes composable functions and outputs a tree
+    structure that represents your UI. This UI tree consists of layout nodes that contain all the
+    information needed for the next phases
+
+ Layout
+    In the layout phase, Compose uses the UI tree produced in the composition phase as input. The
+    collection of layout nodes contain all the information needed to decide on each node's size and
+    location in 2D space.
+
+ Drawing
+    In the drawing phase, the tree is traversed again from top to bottom, and each node draws itself
+    on the screen in turn.
