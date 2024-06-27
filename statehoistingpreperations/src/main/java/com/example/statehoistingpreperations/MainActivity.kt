@@ -13,6 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.statehoistingpreperations.customsavers.CustomSaverScreen
+import com.example.statehoistingpreperations.customsavers.ForListOfUsers
+
+import com.example.statehoistingpreperations.customsavers.MyListComposable
 import com.example.statehoistingpreperations.derivedstates.DerivedStatesOfToLimitRecomp
 import com.example.statehoistingpreperations.derivedstates.EdittextDerivedStateOf
 import com.example.statehoistingpreperations.derivedstates.ProductSearchScreen
@@ -40,7 +44,11 @@ class MainActivity : ComponentActivity() {
 //                    ParentComposableWODRS()
 //                    DerivedStatesOfToLimitRecomp()
 //                    ProductSearchScreen()
-                    EdittextDerivedStateOf()
+//                    EdittextDerivedStateOf()
+
+//                    CustomSaverScreen()
+//                    MyListComposable()
+                    ForListOfUsers()
                 }
             }
         }

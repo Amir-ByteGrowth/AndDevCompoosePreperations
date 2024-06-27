@@ -68,4 +68,5 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
+
 }

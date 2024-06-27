@@ -1,0 +1,12 @@
+Why custom savers?
+In Jetpack Compose, a custom Saver allows you to save and restore the state of your composables,
+especially when dealing with complex objects that aren't automatically saved. This can be particularly
+ useful for handling custom data types or more complex state restoration scenarios.
+
+Creating a Custom Saver
+Define the Saver: The Saver interface consists of two functions: save and restore. The save function
+defines how to convert the custom object into a Bundle or a simpler serializable state. The restore
+function defines how to convert this saved state back into the custom object.
+
+Use the Saver in a State: Use the rememberSaveable function with your custom saver to remember the
+state across configuration changes and process death.
