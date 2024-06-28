@@ -1,0 +1,48 @@
+
+ State in composables
+    Composable functions can use the remember API to store an object in memory. A value computed by
+    remember is stored in the Composition during initial composition, and the stored value is returned
+    during recomposition. remember can be used to store both mutable and immutable objects.
+ mutableStateOf creates an observable MutableState<T>, which is an observable type integrated with
+ the compose runtime.
+ Any changes to value schedules recomposition of any composable functions that read value.
+
+ There are three ways to declare a MutableState object in a composable:
+
+    1- val mutableState = remember { mutableStateOf(default) }
+    2- var value by remember { mutableStateOf(default) }
+    3- val (value, setValue) = remember { mutableStateOf(default) }
+
+ While remember helps you retain state across recompositions, the state is not retained across
+ configuration changes. For this, you must use rememberSaveable. rememberSaveable automatically saves
+  any value that can be saved in a Bundle. For other values, you can pass in a custom saver object.
+
+ Caution: Using mutable objects such as ArrayList<T> or mutableListOf() as state in Compose causes
+ your users to see incorrect or stale data in your app. Mutable objects that are not observable,
+ such as ArrayList or a mutable data class, are not observable by Compose and don't trigger a
+ recomposition when they change. Instead of using non-observable mutable objects, the recommendation
+ is to use an observable data holder such as State<List<T>> and the immutable listOf().
+
+ Other supported types of state
+
+ Compose doesn't require that you use MutableState<T> to hold state; it supports other observable types.
+  Before reading another observable type in Compose, you must convert it to a State<T> so that
+  composables can automatically recompose when the state changes.
+
+ Compose ships with functions to create State<T> from common observable types used in Android apps.
+ Before using these integrations, add the appropriate artifact(s) as outlined below:
+
+ Flow: collectAsStateWithLifecycle()
+
+ collectAsStateWithLifecycle() collects values from a Flow in a lifecycle-aware manner, allowing
+ your app to conserve app resources. It represents the latest emitted value from the Compose State.
+ Use this API as the recommended way to collect flows on Android apps.
+
+ Note*
+    "Use collectAsState for platform-agnostic code instead of collectAsStateWithLifecycle,
+    which is Android-only."
+
+ Key Point: Compose automatically recomposes from reading State objects. If you use another observable
+ type such as LiveData in Compose, you should convert it to State before reading it. Make sure that
+ type conversion happens in a composable, using a composable extension function like
+ LiveData<T>.observeAsState().

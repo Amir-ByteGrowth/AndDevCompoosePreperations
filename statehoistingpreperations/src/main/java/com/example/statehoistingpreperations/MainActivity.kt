@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.statehoistingpreperations.customobserveabletype.MyCustomObserveAbleScreen
 import com.example.statehoistingpreperations.customsavers.CustomSaverScreen
 import com.example.statehoistingpreperations.customsavers.ForListOfUsers
 
@@ -48,7 +49,8 @@ class MainActivity : ComponentActivity() {
 
 //                    CustomSaverScreen()
 //                    MyListComposable()
-                    ForListOfUsers()
+//                    ForListOfUsers()
+                    MyCustomObserveAbleScreen()
                 }
             }
         }
@@ -67,10 +69,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier,stateHolder: TextStateH
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CompoosePreperationsTheme {
-        Greeting("Android")
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    CompoosePreperationsTheme {
+//        Greeting("Android")
+//    }
+//}
