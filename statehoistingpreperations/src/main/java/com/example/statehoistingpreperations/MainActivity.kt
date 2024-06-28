@@ -12,17 +12,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.statehoistingpreperations.customobserveabletype.MyCustomObserveAbleScreen
-import com.example.statehoistingpreperations.customsavers.CustomSaverScreen
-import com.example.statehoistingpreperations.customsavers.ForListOfUsers
+import com.example.statehoistingpreperations.differentwaystostorestate.CityObjectSaverUsingListSaverScreen
 
-import com.example.statehoistingpreperations.customsavers.MyListComposable
-import com.example.statehoistingpreperations.derivedstates.DerivedStatesOfToLimitRecomp
-import com.example.statehoistingpreperations.derivedstates.EdittextDerivedStateOf
-import com.example.statehoistingpreperations.derivedstates.ProductSearchScreen
-import com.example.statehoistingpreperations.increaseperformancebydeffered.ParentComposable
-import com.example.statehoistingpreperations.increaseperformancebydeffered.ParentComposableWODRS
+import com.example.statehoistingpreperations.differentwaystostorestate.UsingMapSaverScreen
 import com.example.statehoistingpreperations.ui.theme.CompoosePreperationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,7 +42,10 @@ class MainActivity : ComponentActivity() {
 //                    CustomSaverScreen()
 //                    MyListComposable()
 //                    ForListOfUsers()
-                    MyCustomObserveAbleScreen()
+//                    MyCustomObserveAbleScreen()
+//                    UserListComposable()
+//                    CityScreen()
+                    CityObjectSaverUsingListSaverScreen()
                 }
             }
         }

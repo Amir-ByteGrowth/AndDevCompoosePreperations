@@ -1,4 +1,4 @@
-package com.example.statehoistingpreperations.customsavers
+package com.example.statehoistingpreperations.customsaverstoStoreState
 
 import androidx.compose.runtime.saveable.Saver
 

@@ -1,4 +1,4 @@
-package com.example.statehoistingpreperations.customsavers
+package com.example.statehoistingpreperations.customsaverstoStoreState
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column

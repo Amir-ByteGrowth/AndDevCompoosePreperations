@@ -46,3 +46,164 @@
  type such as LiveData in Compose, you should convert it to State before reading it. Make sure that
  type conversion happens in a composable, using a composable extension function like
  LiveData<T>.observeAsState().
+
+ Stateful versus stateless
+
+ A composable that uses remember to store an object creates internal state, making the composable
+ stateful. HelloContent is an example of a stateful composable because it holds and modifies its name
+  state internally. This can be useful in situations where a caller doesn't need to control the state
+   and can use it without having to manage the state themselves. However, composables with internal
+  state tend to be less reusable and harder to test.
+
+ A stateless composable is a composable that doesn't hold any state.An easy way to achieve stateless
+ is by using state hoisting.
+
+As you develop reusable composables, you often want to expose both a stateful and a stateless version
+of the same composable. The stateful version is convenient for callers that don't care about the state,
+and the stateless version is necessary for callers that need to control or hoist the state.
+
+State hoisting
+
+State hoisting in Compose is a pattern of moving state to a composable's caller to make a composable
+stateless. The general pattern for state hoisting in Jetpack Compose is to replace the state variable
+with two parameters:
+
+value: T: the current value to display
+onValueChange: (T) -> Unit: an event that requests the value to change, where T is the proposed new
+value
+
+State that is hoisted this way has some important properties:
+
+Single source of truth: By moving state instead of duplicating it, we're ensuring there's only one
+source of truth. This helps avoid bugs.
+Encapsulated: Only stateful composables can modify their state. It's completely internal.
+Shareable: Hoisted state can be shared with multiple composables. If you wanted to read name in a
+different composable, hoisting would allow you to do that.
+Interceptable: callers to the stateless composables can decide to ignore or modify events before
+changing the state.
+Decoupled: the state for the stateless composables may be stored anywhere. For example, it's now
+possible to move name into a ViewModel.
+
+Unidirectional data flow
+The pattern where the state goes down, and events go up is called a unidirectional data flow. In
+this case, the state goes down from HelloScreen to HelloContent and events go up from HelloContent to
+HelloScreen. By following unidirectional data flow, you can decouple composables that display state
+in the UI from the parts of your app that store and change state.
+
+Key Point: When hoisting state, there are three rules to help you figure out where state should go:
+
+    1- State should be hoisted to at least the lowest common parent of all composables that use the state (read).
+    2- State should be hoisted to at least the highest level it may be changed (write).
+    3- If two states change in response to the same events they should be hoisted together.
+       You can hoist state higher than these rules require, but underhoisting state makes it difficult or
+       impossible to follow unidirectional data flow.
+
+Restoring state in Compose
+
+The rememberSaveable API behaves similarly to remember because it retains state across recompositions,
+and also across activity or process recreation using the saved instance state mechanism. For example,
+this happens, when the screen is rotated.
+
+Note: rememberSaveable will not retain state if the activity is completely dismissed by the user. For
+example, it does not retain state if the user swipes the current activity up from the recents screen.
+
+Ways to store state
+
+All data types that are added to the Bundle are saved automatically. If you want to save something
+that cannot be added to the Bundle, there are several options.
+     There are several options
+        1- Parcelize
+           The simplest solution is to add the @Parcelize annotation to the object. The object becomes
+           parcelable, and can be bundled. For example, this code makes a parcelable City data type
+           and saves it to the state.
+           @Parcelize
+           data class City(val name: String, val country: String) : Parcelable
+
+           @Composable
+           fun CityScreen() {
+               var selectedCity = rememberSaveable {
+                   mutableStateOf(City("Madrid", "Spain"))
+               }
+           }
+        2- MapSaver
+
+           If for some reason @Parcelize is not suitable, you can use mapSaver to define your own rule
+           for converting an object into a set of values that the system can save to the Bundle
+
+           data class City(val name: String, val country: String)
+
+           val CitySaver = run {
+               val nameKey = "Name"
+               val countryKey = "Country"
+               mapSaver(
+                   save = { mapOf(nameKey to it.name, countryKey to it.country) },
+                   restore = { City(it[nameKey] as String, it[countryKey] as String) }
+               )
+           }
+
+           or
+           val CitySaver<City,Any> = run {
+                          val nameKey = "Name"
+                          val countryKey = "Country"
+                          mapSaver(
+                              save = { mapOf(nameKey to it.name, countryKey to it.country) },
+                              restore = { City(it[nameKey] as String, it[countryKey] as String) }
+                          )
+                      }
+
+           @Composable
+           fun CityScreen() {
+               var selectedCity = rememberSaveable(stateSaver = CitySaver) {
+                   mutableStateOf(City("Madrid", "Spain"))
+               }
+           }
+
+
+           The mapSaver and the custom Saver implementation for User are conceptually similar but
+           differ in their construction and usage. Both are used to save and restore state in a
+           composable, but they are defined differently
+
+           Custom Saver Example
+           You can also manually create a Saver by specifying the save and restore functions directly,
+           which gives you more control over the saving and restoring process:
+
+           kotlin
+           Copy code
+           data class User(val name: String, val age: Int)
+
+           val SingleObjectCustomSaver = Saver<User, Map<String, Any>>(
+               save = { user ->
+                   mapOf(
+                       "name" to user.name,
+                       "age" to user.age
+                   )
+               },
+               restore = { state ->
+                   val name = state["name"] as? String ?: return@Saver null
+                   val age = state["age"] as? Int ?: return@Saver null
+                   User(name, age)
+               }
+           )
+
+           Conclusion
+           Use mapSaver for simplicity and readability when dealing with basic Map save and restore operations.
+           Use a custom Saver for more control or when you need to perform more complex save and restore operations.
+           Both approaches are valid and the choice depends on the complexity of your saving/restoring logic and your preference for readability vs. control.
+
+         3-  ListSaver
+
+           To avoid needing to define the keys for the map, you can also use listSaver and use its indices as keys:
+
+           data class City(val name: String, val country: String)
+
+           val CitySaver = listSaver<City, Any>(
+               save = { listOf(it.name, it.country) },
+               restore = { City(it[0] as String, it[1] as String) }
+           )
+
+           @Composable
+           fun CityScreen() {
+               var selectedCity = rememberSaveable(stateSaver = CitySaver) {
+                   mutableStateOf(City("Madrid", "Spain"))
+               }
+           }
