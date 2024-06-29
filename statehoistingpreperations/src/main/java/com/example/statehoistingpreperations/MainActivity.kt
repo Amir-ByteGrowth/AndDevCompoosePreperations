@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import com.example.statehoistingpreperations.differentwaystostorestate.CityObjectSaverUsingListSaverScreen
 
 import com.example.statehoistingpreperations.differentwaystostorestate.UsingMapSaverScreen
+import com.example.statehoistingpreperations.rememberwithkey.RememberWithKey
 import com.example.statehoistingpreperations.ui.theme.CompoosePreperationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -45,7 +46,8 @@ class MainActivity : ComponentActivity() {
 //                    MyCustomObserveAbleScreen()
 //                    UserListComposable()
 //                    CityScreen()
-                    CityObjectSaverUsingListSaverScreen()
+//                    CityObjectSaverUsingListSaverScreen()
+                    RememberWithKey()
                 }
             }
         }

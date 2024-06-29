@@ -1,0 +1,71 @@
+State holders in Compose
+
+Simple state hoisting can be managed in the composable functions itself. However, if the amount of
+state to keep track of increases, or the logic to perform in composable functions arises,
+it's a good practice to delegate the logic and state responsibilities to other classes: state holders.
+
+Key Term: State holders manage logic and state of composables.
+
+Note that in other materials, state holders are also called hoisted state objects
+
+Retrigger remember calculations when keys change
+
+The remember API is frequently used together with MutableState:
+
+
+var name by remember { mutableStateOf("") }
+
+Here, using the remember function makes the MutableState value survive recompositions.
+
+In general, remember takes a calculation lambda parameter. When remember is first run, it invokes the
+calculation lambda and stores its result. During recomposition, remember returns the value that was
+last stored.
+
+Apart from caching state, you can also use remember to store any object or result of an operation in
+the Composition that is expensive to initialize or calculate. You might not want to repeat this
+calculation in every recomposition. An example is creating this ShaderBrush object, which is an
+expensive operation:
+
+val brush = remember {
+    ShaderBrush(
+        BitmapShader(
+            ImageBitmap.imageResource(res, avatarRes).asAndroidBitmap(),
+            Shader.TileMode.REPEAT,
+            Shader.TileMode.REPEAT
+        )
+    )
+}
+
+remember stores the value until it leaves the Composition. However, there is a way to invalidate the cached value. The remember API also takes a key or keys parameter. If any of these keys change, the next time the function recomposes, remember invalidates the cache and executes the calculation lambda block again. This mechanism gives you control over the lifetime of an object in the Composition. The calculation remains valid until the inputs change, instead of until the remembered value leaves the Composition.
+
+The following examples show how this mechanism works.
+
+In this snippet, a ShaderBrush is created and used as the background paint of a Box composable.
+remember stores the ShaderBrush instance because it is expensive to recreate, as explained earlier.
+remember takes avatarRes as the key1 parameter, which is the selected background image. If avatarRes
+changes, the brush recomposes with the new image, and reapplies to the Box. This can occur when the
+user selects another image to be the background from a picker.
+
+
+@Composable
+private fun BackgroundBanner(
+    @DrawableRes avatarRes: Int,
+    modifier: Modifier = Modifier,
+    res: Resources = LocalContext.current.resources
+) {
+    val brush = remember(key1 = avatarRes) {
+        ShaderBrush(
+            BitmapShader(
+                ImageBitmap.imageResource(res, avatarRes).asAndroidBitmap(),
+                Shader.TileMode.REPEAT,
+                Shader.TileMode.REPEAT
+            )
+        )
+    }
+
+    Box(
+        modifier = modifier.background(brush)
+    ) {
+        /* ... */
+    }
+}
