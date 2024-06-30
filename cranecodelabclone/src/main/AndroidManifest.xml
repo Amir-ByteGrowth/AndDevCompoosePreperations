@@ -20,6 +20,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".details.DetailsActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.CompoosePreperations"/>
+
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="your API key"/>
     </application>
 
 </manifest>

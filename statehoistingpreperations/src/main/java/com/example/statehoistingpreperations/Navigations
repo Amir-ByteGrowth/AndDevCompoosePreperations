@@ -1,0 +1,51 @@
+what is difference between navigation destination and route?
+
+In the context of navigation within Jetpack Compose (or other Android navigation libraries),
+"destination" and "route" are related but distinct concepts. Here’s the difference between the two:
+
+Route
+Definition: A route is essentially a unique identifier for a screen or a destination within the
+navigation graph. It is a string that is used to define and recognize a particular point in the
+navigation graph.
+Usage: Routes are used to specify where the navigation should go when a navigation action is triggered.
+When navigating to a new screen, you typically pass the route string to the navigation controller.
+Destination
+Definition: A destination represents a specific screen or a target in the navigation graph where the
+user can navigate to. Each destination is associated with a route.
+Usage: Destinations are defined in the navigation graph and can represent composable screens, dialogs,
+or other targets. A destination can have associated actions, arguments, and other configuration options.
+Example in Jetpack Compose Navigation
+Here’s a simple example to illustrate the difference:
+
+kotlin
+Copy code
+// Define routes
+const val homeRoute = "home"
+const val detailsRoute = "details/{itemId}"
+
+// Setup NavHost
+NavHost(navController, startDestination = homeRoute) {
+    // Define destinations
+    composable(route = homeRoute) {
+        HomeScreen(navController)
+    }
+    composable(route = detailsRoute) { backStackEntry ->
+        val itemId = backStackEntry.arguments?.getString("itemId")
+        DetailsScreen(navController, itemId)
+    }
+}
+
+// Navigating to a route
+navController.navigate("details/123")
+In this example:
+
+homeRoute and detailsRoute are routes. They are unique string identifiers used to specify where to navigate.
+The composable blocks inside NavHost define destinations. Each destination is associated with a route and represents a screen in the navigation graph.
+Key Points:
+A route is a string identifier used to navigate to a destination.
+A destination is a defined screen or target in the navigation graph that users can navigate to, identified by a route.
+Understanding this distinction helps in properly configuring and navigating through different parts of an app in Jetpack Compose.
+
+
+
+

@@ -1,0 +1,44 @@
+    Where to hoist state
+        In a Compose application, where you hoist UI state depends on whether UI logic or business logic
+        requires it. This document lays out these two main scenarios.
+
+    Best practice
+        You should hoist UI state to the lowest common ancestor between all the composables that read and
+        write it. You should keep state closest to where it is consumed. From the state owner, expose to
+        consumers immutable state and events to modify the state.
+        The lowest common ancestor can also be outside of the Composition. For example, when hoisting state
+        in a ViewModel because business logic is involved.
+
+    This page explains this best practice in detail and a caveat to keep in mind.
+
+    Types of UI state and UI logic
+        Below there are definitions for types of UI state and logic that are used throughout this document.
+
+    UI state
+        UI state is the property that describes the UI. There are two types of UI state:
+    Screen UI state
+        is what you need to display on the screen. For example, a NewsUiState class can contain the
+        news articles and other information needed to render the UI. This state is usually connected
+        with other layers of the hierarchy because it contains app data.
+    UI element state refers to
+        properties intrinsic to UI elements that influence how they are rendered. A UI element may
+        be shown or hidden and may have a certain font, font size, or font color. In Android Views,
+        the View manages this state itself as it is inherently stateful,
+        exposing methods to modify or query its state. An example of this are the get and set methods
+        of the TextView class for its text. In Jetpack Compose, the state is external to the composable,
+        and you can even hoist it out of the immediate vicinity of the composable into the calling
+        composable function or a state holder. An example of this is ScaffoldState for the Scaffold composable.
+
+    Logic
+        Logic in an application can be either business logic or UI logic:
+
+    Business logic
+        is the implementation of product requirements for app data. For example, bookmarking an
+        article in a news reader app when the user taps the button. This logic to save a bookmark to
+        a file or database is usually placed in the domain or data layers. The state holder usually
+        delegates this logic to those layers by calling the methods they expose.
+
+    UI logic
+        is related to how to display UI state on the screen. For example, obtaining the right search bar
+        hint when the user has selected a category, scrolling to a particular item in a list, or the
+        navigation logic to a particular screen when the user clicks a button.
