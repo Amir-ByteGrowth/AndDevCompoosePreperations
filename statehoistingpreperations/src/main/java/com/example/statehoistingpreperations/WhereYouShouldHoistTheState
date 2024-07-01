@@ -42,3 +42,52 @@
         is related to how to display UI state on the screen. For example, obtaining the right search bar
         hint when the user has selected a category, scrolling to a particular item in a list, or the
         navigation logic to a particular screen when the user clicks a button.
+
+    UI logic
+
+    When UI logic needs to read or write state, you should scope the state to the UI, following its
+    lifecycle. To achieve this, you should hoist the state at the correct level in a composable function.
+    Alternatively, you can do so in a plain state holder class, also scoped to the UI lifecycle.
+
+    Below is a description of both solutions and explanation of when to use which.
+
+    Composables as state owner
+
+    Having UI logic and UI element state in composables is a good approach if the state and logic is
+    simple. You can leave your state internal to a composable or hoist as required.
+
+    No state hoisting needed
+
+    Hoisting state isn't always required. State can be kept internal in a composable when no other
+    composable need to control it. In this snippet, there is a composable that expands and collapses on tap:
+
+    @Composable
+    fun ChatBubble(
+        message: Message
+    ) {
+        var showDetails by rememberSaveable { mutableStateOf(false) } // Define the UI element expanded state
+
+        ClickableText(
+            text = AnnotatedString(message.content),
+            onClick = { showDetails = !showDetails } // Apply simple UI logic
+        )
+
+        if (showDetails) {
+            Text(message.timestamp)
+        }
+    }
+
+    Business logic
+
+    If composables and plain state holders classes are in charge of the UI logic and UI element state,
+    a screen level state holder is in charge of the following tasks:
+
+    Providing access to the business logic of the application that is usually placed in other layers
+    of the hierarchy such as the business and data layers.
+    Preparing the application data for presentation in a particular screen, which becomes the screen UI state.
+
+ViewModels as state owner
+
+The benefits of AAC ViewModels in Android development make them suitable for providing access to the
+ business logic and preparing the application data for presentation on the screen.
+
