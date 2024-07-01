@@ -91,3 +91,47 @@ ViewModels as state owner
 The benefits of AAC ViewModels in Android development make them suitable for providing access to the
  business logic and preparing the application data for presentation on the screen.
 
+
+
+Caveat
+
+For some Compose UI element state, hoisting to the ViewModel might require special considerations. For example, some state holders of Compose UI elements expose methods to modify the state. Some of them might be suspend functions that trigger animations. These suspend functions can throw exceptions if you call them from a CoroutineScope that is not scoped to the Composition.
+
+Let’s say the app drawer’s content is dynamic and you need to fetch and refresh it from the data layer after it’s closed. You should hoist the drawer state to the ViewModel so you can call both the UI and business logic on this element from the state owner.
+
+However, calling DrawerState's close() method using the viewModelScope from Compose UI causes a runtime exception of type IllegalStateException with a message reading “a MonotonicFrameClock is not available in this CoroutineContext”.
+
+To fix this, use a CoroutineScope scoped to the Composition. It provides a MonotonicFrameClock in the CoroutineContext that is necessary for the suspend functions to work.
+
+Warning: Calling some suspend functions exposed from Compose UI element state that trigger animations throw exceptions if called from a CoroutineScope that's not scoped to the Composition. For example, LazyListState.animateScrollTo() and DrawerState.close().
+To fix this crash, switch the CoroutineContext of the coroutine in the ViewModel to one that is scoped to the Composition. It could look like this:
+
+
+class ConversationViewModel(/*...*/) : ViewModel() {
+
+    val drawerState = DrawerState(initialValue = DrawerValue.Closed)
+
+    private val _drawerContent = MutableStateFlow(DrawerContent.Empty)
+    val drawerContent: StateFlow<DrawerContent> = _drawerContent.asStateFlow()
+
+    fun closeDrawer(uiScope: CoroutineScope) {
+        viewModelScope.launch {
+            withContext(uiScope.coroutineContext) { // Use instead of the default context
+                drawerState.close()
+            }
+            // Fetch drawer content and update state
+            _drawerContent.update { content }
+        }
+    }
+}
+
+// in Compose
+@Composable
+private fun ConversationScreen(
+    conversationViewModel: ConversationViewModel = viewModel()
+) {
+    val scope = rememberCoroutineScope()
+
+    ConversationScreen(onCloseDrawer = { conversationViewModel.closeDrawer(uiScope = scope) })
+}
+
