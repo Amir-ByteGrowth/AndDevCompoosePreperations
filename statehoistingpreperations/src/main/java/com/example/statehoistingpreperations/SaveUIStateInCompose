@@ -1,0 +1,48 @@
+
+Any Android app could lose its UI state due to activity or process recreation. This loss of state can
+occur because of the following events:
+
+Configuration changes. The activity is destroyed and recreated unless the configuration change is
+handled manually.
+System-initiated process death. The app is in the background and the device frees up resources
+(like memory) to be used by other processes.
+
+Note: System-initiated process death is different from user-initiated process death, in which the
+user explicitly dismisses the activity. In the case of user-initiated process death, the loss of
+transient state is generally reasonable (for example, losing the animation state or the content of a
+TextField while filling out a form).
+
+Preserving the state after these events is essential for a positive user experience. Selecting which
+state to persist depends on your app's unique user flows. As a best practice, you should at least
+preserve user input and navigation-related state. Examples of this include the scroll position of a list,
+the ID of the item the user wants more detail about, the in-progress selection of user preferences,
+or input in text fields.
+
+This page summarizes the APIs available to store UI state depending on where your state is hoisted
+ to and the logic that needs it.
+
+ UI logic
+
+ If your state is hoisted in the UI, either in composable functions or plain state holder classes
+ scoped to the Composition, you can use rememberSaveable to retain state across activity and process
+ recreation.
+
+ In the following snippet, rememberSaveable is used to store a single boolean UI element state:
+  Usually, data stored in saved instance state is transient state that depends on user input or navigation.
+  Examples of this include the scroll position of a list, the ID of the item the user wants more detail
+  about, the in-progress selection of user preferences, or input in text fields.
+
+  rememberSaveable stores UI element state in a Bundle through the saved instance state mechanism.
+
+  It is able to store primitive types to the bundle automatically. If your state is held in a type
+  that is not primitive, like a data class, you can use different storing mechanisms, such as using
+  the Parcelize annotation, using Compose APIs like listSaver and mapSaver, or implementing a custom
+  saver class extending Compose runtime Saver class. See the Ways to store state documentation to
+  learn more about these methods.
+
+Best practice
+
+rememberSaveable uses a Bundle to store UI state, which is shared by other APIs that also write to it,
+like onSaveInstanceState() calls in your activity. However, the size of this Bundle is limited, and
+storing large objects could lead to TransactionTooLarge exceptions in runtime. This can be particularly
+problematic in single Activity apps where the same Bundle is being used across the app
