@@ -15,6 +15,9 @@ import androidx.compose.ui.Modifier
 import com.example.statehoistingpreperations.differentwaystostorestate.CityObjectSaverUsingListSaverScreen
 
 import com.example.statehoistingpreperations.differentwaystostorestate.UsingMapSaverScreen
+import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.CounterScreen
+import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.HandleStateScreen
+import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.UserInput
 import com.example.statehoistingpreperations.plainstateholders.MyTextField
 import com.example.statehoistingpreperations.plainstateholders.PlainStateHolderScreen
 import com.example.statehoistingpreperations.rememberwithkey.RememberWithKey
@@ -51,7 +54,10 @@ class MainActivity : ComponentActivity() {
 //                    CityObjectSaverUsingListSaverScreen()
 //                    RememberWithKey()
 //                    PlainStateHolderScreen()
-                    MyTextField("Enter Name Here")
+//                    MyTextField("Enter Name Here")
+//                    CounterScreen()
+//                    HandleStateScreen()
+                    UserInput()
                 }
             }
         }
