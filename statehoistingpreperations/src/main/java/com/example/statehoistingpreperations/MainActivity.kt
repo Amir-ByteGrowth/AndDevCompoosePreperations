@@ -18,6 +18,7 @@ import com.example.statehoistingpreperations.differentwaystostorestate.UsingMapS
 import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.CounterScreen
 import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.HandleStateScreen
 import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.UserInput
+import com.example.statehoistingpreperations.localcompositionexm.LocalCompositionScreen
 import com.example.statehoistingpreperations.plainstateholders.MyTextField
 import com.example.statehoistingpreperations.plainstateholders.PlainStateHolderScreen
 import com.example.statehoistingpreperations.rememberwithkey.RememberWithKey
@@ -57,7 +58,8 @@ class MainActivity : ComponentActivity() {
 //                    MyTextField("Enter Name Here")
 //                    CounterScreen()
 //                    HandleStateScreen()
-                    UserInput()
+//                    UserInput()
+                    LocalCompositionScreen()
                 }
             }
         }
