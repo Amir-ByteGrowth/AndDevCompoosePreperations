@@ -18,7 +18,12 @@ import com.example.statehoistingpreperations.differentwaystostorestate.UsingMapS
 import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.CounterScreen
 import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.HandleStateScreen
 import com.example.statehoistingpreperations.handlesysteminitiatedprocessdeath.UserInput
+
+import com.example.statehoistingpreperations.localcompositionexm.LocalCompositionForRemember
 import com.example.statehoistingpreperations.localcompositionexm.LocalCompositionScreen
+import com.example.statehoistingpreperations.localcompositionexm.MyApp
+import com.example.statehoistingpreperations.localcompositionexm.MyAppStatic
+import com.example.statehoistingpreperations.localcompositionexm.StaticLocalComposition
 import com.example.statehoistingpreperations.plainstateholders.MyTextField
 import com.example.statehoistingpreperations.plainstateholders.PlainStateHolderScreen
 import com.example.statehoistingpreperations.rememberwithkey.RememberWithKey
@@ -59,7 +64,10 @@ class MainActivity : ComponentActivity() {
 //                    CounterScreen()
 //                    HandleStateScreen()
 //                    UserInput()
-                    LocalCompositionScreen()
+//                    LocalCompositionScreen()
+//                    LocalCompositionForRemember()
+//                    StaticLocalComposition()
+                    MyAppStatic()
                 }
             }
         }

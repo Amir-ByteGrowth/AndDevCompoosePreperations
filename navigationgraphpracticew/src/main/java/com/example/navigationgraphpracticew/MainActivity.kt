@@ -15,6 +15,8 @@ import com.example.navigationgraphpracticew.bottomnavbar.BottomNavbarScreen
 import com.example.navigationgraphpracticew.cleannavgrapgh.SimpleNavGraphForMultiScreen
 import com.example.navigationgraphpracticew.navigation.AppNavHost
 import com.example.navigationgraphpracticew.navigation.NestedNavGraph
+import com.example.navigationgraphpracticew.progressbar.LinearProgressIndicatorWithSlider
+import com.example.navigationgraphpracticew.progressbar.usertest.UserScreenContent
 import com.example.navigationgraphpracticew.ui.theme.CompoosePreperationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +32,10 @@ class MainActivity : ComponentActivity() {
 //                    AppNavHost(navController = rememberNavController())
 //                    NestedNavGraph(navController = rememberNavController())
 //                    BottomNavbarScreen()
-                    SimpleNavGraphForMultiScreen()
+//                    SimpleNavGraphForMultiScreen()
+//                    LinearProgressIndicatorWithSlider()
+
+                    UserScreenContent()
                 }
             }
         }
@@ -45,10 +50,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CompoosePreperationsTheme {
-        Greeting("Android")
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    CompoosePreperationsTheme {
+//        Greeting("Android")
+//    }
+//}
