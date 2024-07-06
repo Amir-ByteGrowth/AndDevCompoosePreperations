@@ -1,0 +1,34 @@
+Enum
+1- Fixed Set of Constants: Enums are used to represent a fixed set of constants. Each enum constant
+is an instance of the enum class.
+2- Simple and Lightweight: Enums are simple and easy to use when you have a fixed set of related
+constants.
+3- Instance Control: Enum constants are single instances (singletons).
+4- Usage: Typically used for representing a simple, fixed set of constants like days of the week,
+directions, etc.
+
+enum class EventType {
+    CLICK,
+    LONG_CLICK,
+    SWIPE
+}
+
+Sealed Class
+1- Restricted Class Hierarchy: Sealed classes allow you to represent restricted class hierarchies, meaning a class can have a limited number of subclasses defined in the same file.
+2- More Flexibility: Sealed classes can have multiple instances and can contain state and behavior.
+3- Type Safety: When used with when expressions, sealed classes provide exhaustive type checking, ensuring all possible subclasses are handled.
+4- Usage: Useful when you need to represent a complex hierarchy with a fixed number of implementations, possibly with additional data.
+Example:
+sealed class UiEvent {
+    object OnClick : UiEvent()
+    object OnLongClick : UiEvent()
+    data class OnSwipe(val direction: SwipeDirection) : UiEvent()
+}
+
+kotlin
+Copy code
+sealed class EventType {
+    object Click : EventType()
+    object LongClick : EventType()
+    object Swipe : EventType()
+}

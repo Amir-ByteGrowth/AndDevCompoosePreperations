@@ -1,0 +1,105 @@
+Navigation
+
+Navigation refers to the interactions that let users navigate across, into, and back out from the
+different pieces of content within your app.
+Android Jetpack's Navigation component includes the Navigation library, Safe Args Gradle plug-in,
+
+
+Key concepts
+
+The following table provides an overview of the key concepts in navigation and the main types that you use to implement them.
+
+Concept
+
+Purpose
+
+Type
+
+Host
+A UI element that contains the current navigation destination. That is, when a user navigates through an app, the app essentially swaps destinations in and out of the navigation host.
+Compose: NavHost
+Fragments: NavHostFragment
+Graph
+A data structure that defines all the navigation destinations within the app and how they connect together.
+NavGraph
+Controller
+The central coordinator for managing navigation between destinations. The controller offers methods for navigating between destinations, handling deep links, managing the back stack, and more.
+NavController
+Destination
+A node in the navigation graph. When the user navigates to this node, the host displays its content.
+NavDestination
+
+Typically created when constructing the navigation graph.
+Route
+Uniquely identifies a destination and any data required by it.
+
+You can navigate using routes. Routes take you to destinations.
+
+
+Benefits and features
+
+The Navigation component provides a number of other benefits and features, including the following:
+
+    1- Animations and transitions: Provides standardized resources for animations and transitions.
+    2- Deep linking: Implements and handles deep links that take the user directly to a destination.
+    3- UI patterns: Supports patterns such as navigation drawers and bottom navigation with minimal additional work.
+    4- Type safety: Includes support for passing data between destinations with type safety.
+    5- ViewModel support: Enables scoping a ViewModel to a navigation graph to share UI-related data between the graph's destinations.
+    6- Fragment transactions: Fully supports and handles fragment transactions.
+    7- Back and up: Handles back and up actions correctly by default.
+
+ Design your navigation graph
+
+
+ The Navigation component uses a navigation graph to manage your app's navigation. The navigation
+ graph is a data structure that contains each destination within your app and the connections between
+ them.
+
+ Note: The navigation graph is distinct from the back stack, which is a stack within the NavController
+ that holds destinations the user has recently visited.
+ Destination types
+
+ There are three general types of destinations: hosted, dialog, and activity. The following table
+ outlines these three destination types and their purposes.
+
+ Type
+
+ Description
+
+ Use cases
+
+ Hosted
+ Fills the entire navigation host. That is, the size of a hosted destination is the same as the size
+  of the navigation host and previous destinations are not visible.
+ Main and detail screens.
+ Dialog
+ Presents overlay UI components. This UI is not tied to the location of the navigation host or its size.
+  Previous destinations are visible underneath the destination.
+ Alerts, selections, forms.
+ Activity
+ Represents unique screens or features within the app.
+ Serve as an exit point to the navigation graph that starts a new Android activity that is managed
+ separately from the Navigation component.
+
+ In modern Android development, an app consists of a single activity. Activity destinations are
+ therefore best used when interacting with third party activity
+
+
+  Jetpack Compose Navigation, NavController and NavHostController are both used to manage navigation within a Compose application, but they have different purposes and functionalities.
+
+ NavController
+ 1- Purpose: NavController is the core class used for navigating between composable destinations. It manages the navigation state and back stack for a navigation graph.
+ 2- Usage: It provides basic navigation capabilities, such as navigating to a different route, popping the back stack, and navigating with arguments.
+ 3- Common Methods:
+    navigate(route: String): Navigate to a destination by route.
+    popBackStack(): Pop the back stack.
+    navigateUp(): Navigate up in the hierarchy.
+ NavHostController
+ Purpose: NavHostController is a subclass of NavController that is specifically designed to work with NavHost composable. It adds additional functionality required to manage the lifecycle and state of the navigation host.
+ Usage: It provides more advanced navigation capabilities and is typically used internally by the NavHost composable. When you call rememberNavController(), it returns an instance of NavHostController.
+ Common Methods: Inherits all methods from NavController, but also manages state restoration and lifecycle-aware components within the navigation host.
+NavHostController
+Purpose: NavHostController is a subclass of NavController that is specifically designed to work with NavHost composable. It adds additional functionality required to manage the lifecycle and state of the navigation host.
+Usage: It provides more advanced navigation capabilities and is typically used internally by the NavHost composable. When you call rememberNavController(), it returns an instance of NavHostController.
+Common Methods: Inherits all methods from NavController, but also manages state restoration and lifecycle-aware components within the navigation host.
+
