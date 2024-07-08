@@ -95,3 +95,11 @@ fun NavGraphWithAnimation(modifier: Modifier = Modifier) {
         }
     }
 }
+
+//Transition Types:
+//fadeIn: Fades in the composable.
+//fadeOut: Fades out the composable.
+//slideInHorizontally: Slides in the composable horizontally.
+//slideOutHorizontally: Slides out the composable horizontally.
+//slideInVertically: Slides in the composable vertically.
+//slideOutVertically: Slides out the composable vertically.
