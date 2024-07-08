@@ -1,5 +1,6 @@
 package com.example.navigationgraphreading.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,26 +14,47 @@ import com.example.navigationgraphreading.ui.screens.secondscreen.SecondScreen
 import com.example.navigationgraphreading.ui.screens.thirdscreen.ThirdScreen
 
 @Composable
-fun MainNavGraph(navController: NavHostController) {
+fun MainNavGraph() {
+    val navController: NavHostController = rememberNavController()
+    Log.d("NavHostComposition", "Composition")
     NavHost(navController = navController, startDestination = Destination.ScreenOne.route) {
-        composable("ScreenOne") {
-            FirstScreen { navigateTo(Destination.ScreenTwo.route, navController) }
+        composable(Destination.ScreenOne.route) {
+            FirstScreen { navController.navigate(Destination.ScreenTwo.route) }
         }
         composable(Destination.ScreenTwo.route) {
             SecondScreen {
-                navigateTo(Destination.ScreenThree.route, navController)
-
+                navController.navigate(Destination.ScreenThree.route + "/123")
             }
         }
-        composable(Destination.ScreenThree.route) {
-            ThirdScreen { navigateTo(Destination.ScreenFour.route, navController) }
+        composable(Destination.ScreenThree.route + "/{comingfrom}") { backStackEntry ->
+            val comingFrom = backStackEntry.arguments?.getString("comingfrom") ?: ""
+
+            ThirdScreen {
+                navController.navigate(Destination.ScreenFour.route)
+                //this will clear stack behind this
+//            {
+//                popUpTo(navController.graph.startDestinationId){
+//                    inclusive = true
+//                }
+//                launchSingleTop =true
+//            }
+            }
         }
         composable(Destination.ScreenFour.route) {
-            FourthScreen { navigateTo(Destination.ScreenFive.route, navController) }
+            FourthScreen { navController.navigate(Destination.ScreenFive.route) }
         }
         composable(Destination.ScreenFive.route) {
             FifthScreen(
-                navigate = { navController.navigate(Destination.ScreenOne.route) },
+                navigate = {
+                    navController.navigate(Destination.ScreenOne.route) {
+//this will navigate to first screen and clear the stack
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+
+                    }
+                },
                 onPopUpClick = {navController.popBackStack(it)})
         }
     }
@@ -41,6 +63,7 @@ fun MainNavGraph(navController: NavHostController) {
 fun navigateTo(route: String, navController: NavHostController) {
     navController.navigate(route)
 }
+
 
 fun NavHostController.popBackStack(
     popEventType: PopEventType,
@@ -65,6 +88,23 @@ fun NavHostController.popBackStack(
         PopEventType.NavigateToDialog -> {
 
         }
+
+        PopEventType.NavigateToRoute -> {
+            this.navigate(route = "subgraph")
+            {
+                popUpTo(route = "subgraph" )
+//                {
+//                    inclusive=false
+//                }
+            }
+        }
+
+        PopEventType.PopBackToRout -> {
+//            this will pop till specified rout
+//            this.popBackStack("subgraph",false)
+            //if the value is true it will pop specified rout as well, else it will pop till specified rout
+            this.popBackStack(Destination.ScreenFour.route,true)
+        }
     }
 
 }
@@ -76,6 +116,7 @@ sealed class Destination(val route: String) {
     object ScreenThree : Destination("ScreenThree")
     object ScreenFour : Destination("ScreenFour")
     object ScreenFive : Destination("ScreenFive")
+    object ScreenSix : Destination("ScreenSix")
 }
 
 
@@ -84,7 +125,9 @@ enum class PopEventType {
     PopBackInclusiveTrue,
     PopBackInclusiveFalse,
     NavigateUp,
-    NavigateToDialog
+    NavigateToDialog,
+    NavigateToRoute,
+    PopBackToRout,
 }
 
 @Composable

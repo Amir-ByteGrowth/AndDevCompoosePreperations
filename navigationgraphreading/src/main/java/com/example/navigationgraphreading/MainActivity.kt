@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.navigationgraphreading.navigation.MainNavGraph
 import com.example.navigationgraphreading.navigation.MainScreen
+import com.example.navigationgraphreading.navigation.NavigationBuilderOptionTestingGraph
 import com.example.navigationgraphreading.navigation.NestedGraph
 import com.example.navigationgraphreading.ui.theme.CompoosePreperationsTheme
 
@@ -23,13 +24,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CompoosePreperationsTheme {
-                val navController = rememberNavController()
+//                val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    MainNavGraph(navController = navController)
 //                    MyApp()
-                    NestedGraph(navController)
+//                    NestedGraph(navController)
 //                    MainScreen()
+//                    MainNavGraph()
+
+                    NavigationBuilderOptionTestingGraph()
                 }
             }
         }
