@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun FirstScreen(
+    msg: String = "",
     modifier: Modifier = Modifier,
     navigateToTwoParamScreen: () -> Unit={},
     navigateToSecond: () -> Unit,
@@ -31,6 +32,9 @@ fun FirstScreen(
             }
             Button(onClick = navigateToTwoParamScreen) {
                 Text(text = "Navigate to two Param")
+            }
+            if (msg.isNotEmpty()) {
+                Text(text = msg)
             }
         }
 

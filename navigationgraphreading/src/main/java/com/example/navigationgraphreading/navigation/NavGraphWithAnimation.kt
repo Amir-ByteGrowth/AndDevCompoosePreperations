@@ -48,7 +48,12 @@ fun NavGraphWithAnimation(modifier: Modifier = Modifier) {
 
 
         ) {
-            FirstScreen(navigateToTwoParamScreen = { navController.navigate(Destination.ScreenWithTwoParam.route + "/123/true") }) {
+            // Retrieve data from next screen
+            val msg =
+                navController.currentBackStackEntry?.savedStateHandle?.get<String>("msg")
+            FirstScreen(
+                msg = msg ?: "",
+                navigateToTwoParamScreen = { navController.navigate(Destination.ScreenWithTwoParam.route + "/123/true") }) {
                 navController.navigate(
                     Destination.ScreenTwo.route
                 )
@@ -96,7 +101,13 @@ fun NavGraphWithAnimation(modifier: Modifier = Modifier) {
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             val isMember = backStackEntry.arguments?.getBoolean("isMember") ?: false
-            ScreenWithTwoParam(paramOne = userId ?: "", paramTwo = isMember.toString())
+            ScreenWithTwoParam(paramOne = userId ?: "", paramTwo = isMember.toString()) {
+                navController.previousBackStackEntry?.savedStateHandle?.set<String>(
+                    "msg",
+                    "Data Sent By Amir"
+                )
+                navController.popBackStack()
+            }
         }
 
         composable(
