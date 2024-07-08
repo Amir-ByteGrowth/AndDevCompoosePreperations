@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.navigationgraphreading.navigation.MainNavGraph
 import com.example.navigationgraphreading.navigation.MainScreen
+import com.example.navigationgraphreading.navigation.NavGraphWithAnimation
 import com.example.navigationgraphreading.navigation.NavigationBuilderOptionTestingGraph
 import com.example.navigationgraphreading.navigation.NestedGraph
 import com.example.navigationgraphreading.ui.theme.CompoosePreperationsTheme
@@ -33,7 +34,8 @@ class MainActivity : ComponentActivity() {
 //                    MainScreen()
 //                    MainNavGraph()
 
-                    NavigationBuilderOptionTestingGraph()
+//                    NavigationBuilderOptionTestingGraph()
+                    NavGraphWithAnimation()
                 }
             }
         }
