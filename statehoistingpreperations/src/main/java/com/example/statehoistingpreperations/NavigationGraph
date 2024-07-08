@@ -103,3 +103,14 @@ Purpose: NavHostController is a subclass of NavController that is specifically d
 Usage: It provides more advanced navigation capabilities and is typically used internally by the NavHost composable. When you call rememberNavController(), it returns an instance of NavHostController.
 Common Methods: Inherits all methods from NavController, but also manages state restoration and lifecycle-aware components within the navigation host.
 
+
+Navigate Up VS PopBackStack
+navigateUp() will also pop the top fragment from the backstack, if there is any.
+
+For starters: If you arrived at your current destination from within your app, they act exactly identical.
+
+ONLY if you arrived at the current destination with a deeplink from a different app, they will behave differently:
+
+navigateUp() will leave your app and return to the app that navigated to the deep link in your app.
+
+popBackStack() will attempt to go back one step in your backstack, and will not do anything if there is no backstack entry.

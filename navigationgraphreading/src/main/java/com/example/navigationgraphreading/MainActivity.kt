@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.navigationgraphreading.navigation.MainNavGraph
+import com.example.navigationgraphreading.navigation.MainScreen
+import com.example.navigationgraphreading.navigation.NestedGraph
 import com.example.navigationgraphreading.ui.theme.CompoosePreperationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,8 +26,10 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainNavGraph(navController = navController)
+//                    MainNavGraph(navController = navController)
 //                    MyApp()
+                    NestedGraph(navController)
+//                    MainScreen()
                 }
             }
         }
