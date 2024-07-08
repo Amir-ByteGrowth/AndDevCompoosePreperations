@@ -14,13 +14,23 @@ import androidx.compose.ui.graphics.Color
 
 
 @Composable
-fun FirstScreen(modifier: Modifier = Modifier,navigateToSecond :() ->Unit) {
+fun FirstScreen(
+    modifier: Modifier = Modifier,
+    navigateToTwoParamScreen: () -> Unit={},
+    navigateToSecond: () -> Unit,
+
+) {
     Log.d("WhichScreen", "First Screen")
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().background(color = Color.Magenta)) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color.Magenta)) {
         Column {
             Text(text = "First Screen")
             Button(onClick = navigateToSecond) {
                 Text(text = "Move To Second")
+            }
+            Button(onClick = navigateToTwoParamScreen) {
+                Text(text = "Navigate to two Param")
             }
         }
 

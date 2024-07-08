@@ -9,13 +9,16 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.navigationgraphreading.ui.screens.fifthscreen.FifthScreen
 import com.example.navigationgraphreading.ui.screens.fourthscreen.FourthScreen
 import com.example.navigationgraphreading.ui.screens.screenone.FirstScreen
+import com.example.navigationgraphreading.ui.screens.screenwithtwoparam.ScreenWithTwoParam
 import com.example.navigationgraphreading.ui.screens.secondscreen.SecondScreen
 import com.example.navigationgraphreading.ui.screens.sixthscreen.SixthScreen
 import com.example.navigationgraphreading.ui.screens.thirdscreen.ThirdScreen
@@ -45,8 +48,57 @@ fun NavGraphWithAnimation(modifier: Modifier = Modifier) {
 
 
         ) {
-            FirstScreen { navController.navigate(Destination.ScreenTwo.route) }
+            FirstScreen(navigateToTwoParamScreen = { navController.navigate(Destination.ScreenWithTwoParam.route + "/123/true") }) {
+                navController.navigate(
+                    Destination.ScreenTwo.route
+                )
+            }
         }
+
+        composable(
+            Destination.ScreenWithTwoParam.route + "/{userId}/{isMember}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.StringType
+                    defaultValue = "user1234"
+                    // OR
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument("isMember") {
+                    type = NavType.BoolType
+                }
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(700)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(700)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(700)
+                )
+            }
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            val isMember = backStackEntry.arguments?.getBoolean("isMember") ?: false
+            ScreenWithTwoParam(paramOne = userId ?: "", paramTwo = isMember.toString())
+        }
+
         composable(
             Destination.ScreenTwo.route,
             enterTransition = { slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(700)) },

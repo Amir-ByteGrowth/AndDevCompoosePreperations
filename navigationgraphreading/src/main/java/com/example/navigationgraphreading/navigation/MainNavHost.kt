@@ -117,6 +117,7 @@ sealed class Destination(val route: String) {
     object ScreenFour : Destination("ScreenFour")
     object ScreenFive : Destination("ScreenFive")
     object ScreenSix : Destination("ScreenSix")
+    object ScreenWithTwoParam : Destination("ScreenWithTwoParam")
 }
 
 
@@ -146,4 +147,13 @@ fun MyApp() {
             }
         }
     }
+}
+
+enum class Screen {
+    HOME,
+    LOGIN,
+}
+sealed class NavigationItem(val route: String) {
+    object Home : NavigationItem(Screen.HOME.name)
+    object Login : NavigationItem(Screen.LOGIN.name)
 }
