@@ -114,3 +114,24 @@ ONLY if you arrived at the current destination with a deeplink from a different 
 navigateUp() will leave your app and return to the app that navigated to the deep link in your app.
 
 popBackStack() will attempt to go back one step in your backstack, and will not do anything if there is no backstack entry.
+
+
+Destinations can be grouped into a nested graph to modularize a particular flow in your app’s UI. An
+example of this could be a self-contained login flow.
+A nested graph groups its destinations, just like the main graph, and it requires a designated start
+destination for its associated route, which is where you’ll go when you access that nested graph’s route.
+To add a nested graph to your NavHost, you can use the navigation extension function:
+NavHost(navController, startDestination = "home") {
+    ...
+    // Navigating to the graph via its route ('login') automatically
+    // navigates to the graph's start destination - 'username'
+    // therefore encapsulating the graph's internal routing logic
+    navigation(startDestination = "username", route = "login") {
+        composable("username") { ... }
+        composable("password") { ... }
+        composable("registration") { ... }
+    }
+    ...
+}
+It is strongly recommended that you split your navigation graph into multiple methods as the graph
+grows in size. This also allows multiple modules to contribute their own navigation graphs.

@@ -16,6 +16,7 @@ import com.example.navigationgraphreading.navigation.MainScreen
 import com.example.navigationgraphreading.navigation.NavGraphWithAnimation
 import com.example.navigationgraphreading.navigation.NavigationBuilderOptionTestingGraph
 import com.example.navigationgraphreading.navigation.NestedGraph
+import com.example.navigationgraphreading.navigation.NestedGraphWithNavGraphBuilder
 import com.example.navigationgraphreading.ui.theme.CompoosePreperationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +36,9 @@ class MainActivity : ComponentActivity() {
 //                    MainNavGraph()
 
 //                    NavigationBuilderOptionTestingGraph()
-                    NavGraphWithAnimation()
+//                    NavGraphWithAnimation()
+
+                    NestedGraphWithNavGraphBuilder()
                 }
             }
         }

@@ -118,6 +118,11 @@ sealed class Destination(val route: String) {
     object ScreenFive : Destination("ScreenFive")
     object ScreenSix : Destination("ScreenSix")
     object ScreenWithTwoParam : Destination("ScreenWithTwoParam")
+
+    // graph routs
+    //Graph Routes
+     object AuthNav : Destination("AUTH_NAV_GRAPH")
+     object HomeNav : Destination("HOME_NAV_GRAPH")
 }
 
 
