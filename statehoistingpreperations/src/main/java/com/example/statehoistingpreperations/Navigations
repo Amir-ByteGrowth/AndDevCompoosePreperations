@@ -48,4 +48,16 @@ Understanding this distinction helps in properly configuring and navigating thro
 
 
 
+Share view model across a navigation graph jetpack compose
+
+
+Sharing a ViewModel across a navigation graph in Jetpack Compose can be achieved using the NavBackStackEntry and hiltViewModel() (if you're using Hilt for dependency injection) or viewModel() from the navigation-compose library. Here's how you can do it:
+
+Using Hilt for Dependency Injection
+Setup Hilt in your project: Make sure you have Hilt set up in your project. Add the necessary dependencies to your build.gradle files and annotate your Application class and activities as required.
+
+Create a shared ViewModel: Define your ViewModel and annotate it with @HiltViewModel.
+
+
+
 

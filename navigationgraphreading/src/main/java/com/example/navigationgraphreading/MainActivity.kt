@@ -17,8 +17,12 @@ import com.example.navigationgraphreading.navigation.NavGraphWithAnimation
 import com.example.navigationgraphreading.navigation.NavigationBuilderOptionTestingGraph
 import com.example.navigationgraphreading.navigation.NestedGraph
 import com.example.navigationgraphreading.navigation.NestedGraphWithNavGraphBuilder
+import com.example.navigationgraphreading.sharingviewmodel.byhilt.ByBackStackEntry
+import com.example.navigationgraphreading.sharingviewmodel.byhilt.SharedViewModelNavGraph
 import com.example.navigationgraphreading.ui.theme.CompoosePreperationsTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +42,10 @@ class MainActivity : ComponentActivity() {
 //                    NavigationBuilderOptionTestingGraph()
 //                    NavGraphWithAnimation()
 
-                    NestedGraphWithNavGraphBuilder()
+//                    NestedGraphWithNavGraphBuilder()
+//                    SharedViewModelNavGraph()
+
+                    ByBackStackEntry()
                 }
             }
         }

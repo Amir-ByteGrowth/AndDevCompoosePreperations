@@ -66,8 +66,8 @@ class MainActivity : ComponentActivity() {
 //                    UserInput()
 //                    LocalCompositionScreen()
 //                    LocalCompositionForRemember()
-//                    StaticLocalComposition()
-                    MyAppStatic()
+                    StaticLocalComposition()
+//                    MyAppStatic()
                 }
             }
         }
