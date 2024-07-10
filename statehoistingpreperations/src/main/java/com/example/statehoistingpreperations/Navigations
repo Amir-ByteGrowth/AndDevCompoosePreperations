@@ -60,4 +60,37 @@ Create a shared ViewModel: Define your ViewModel and annotate it with @HiltViewM
 
 
 
+Sharing data between different components in an Android app is a common requirement. One effective way to achieve this is by using ViewModels. In this guide, we’ll explore various methods to create a SharedViewModel in Android.
+1. activityViewModels()
+The activityViewModels() delegate is a powerful tool for sharing a ViewModel across an entire activity. This is suitable for managing global app data such as user preferences or authentication state. Here's an example:
+// Access shared ViewModel within composables
+val sharedViewModel: MySharedViewModel by activityViewModels()
+// Update and display data
+Text(text = sharedViewModel.updatedEmail)
+Button(onClick = { sharedViewModel.updateEmail("email@example.com") }) {
+  Text("Email Update")
+}kotl
+2. navGraphViewModels()
+When dealing with a navigation graph, use navGraphViewModels() to share a ViewModel across composables belonging to a specific navigation flow. This is useful for managing data related to a particular navigation path, like product details within a product list. Example:
+// Access shared ViewModel within a navigation graph
+val sharedViewModel: MySharedViewModel by navGraphViewModels(R.id.mobile_navigation)
+// Display product information in composables
+Text(text = sharedViewModel.name)
+Image(sharedViewModel.image)
+3. rememberViewModel()
+Creating a ViewModel instance specific to a composable subtree rememberViewModel() is a handy option. This is useful when dealing with data relevant only to a particular part of the UI, like shopping cart items within a cart screen. Example:
+// Create and access a ViewModel specific to a composable subtree
+val sharedViewModel: MySharedViewModel = rememberViewModel()
+// Use data and functions within composables
+SharedItems(sharedViewModel.items)
+CheckoutButton(onClick = { sharedViewModel.checkout() })
+4. Dependency Injection (DI) Libraries
+Consider using Dependency Injection (DI) libraries such as Hilt or Dagger for a more organized and testable approach. These libraries facilitate the injection of shared ViewModels into composables. Here’s a high-level overview:
+
+@HiltViewModel class MySharedViewModel @Inject constructor() : ViewModel()
+{  // ViewModel code }
+By adopting one or a combination of these approaches, you can efficiently manage shared data and functionality across different parts of your Android app. Choose the method that aligns with your app’s architecture and complexity.
+
+
+
 
