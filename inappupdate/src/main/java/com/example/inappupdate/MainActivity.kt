@@ -66,6 +66,11 @@ class MainActivity : ComponentActivity() {
     }
 
 
+//    Understanding Asset Pack Deletion
+//    Asset Packs: These are bundles of large assets (like high-resolution textures, large media files, etc.) that are delivered to the user's device via Google Play Asset Delivery. They help keep the initial download size of the app smaller by downloading large assets only when needed.
+//    Space Management: During an update, if the device is low on storage, the updater might need to free up space to successfully download and install the update. Allowing the deletion of asset packs helps in freeing up storage space.
+//    Re-download: If asset packs are deleted during the update, they can be re-downloaded when needed by the app.
+
     private fun checkUpdate() {
         val appUpdateManager = AppUpdateManagerFactory.create(applicationContext)
 
@@ -134,7 +139,8 @@ class MainActivity : ComponentActivity() {
             appUpdateLauncher,
             // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
             // flexible updates.
-            AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
+            // we can specify set allow asset pack deletion true to delete the asset of previous veriosn
+            AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).setAllowAssetPackDeletion(true).build(),
 
         )
     }
