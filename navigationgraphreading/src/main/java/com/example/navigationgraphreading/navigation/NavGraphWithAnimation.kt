@@ -166,3 +166,7 @@ fun NavGraphWithAnimation(modifier: Modifier = Modifier) {
 //slideOutHorizontally: Slides out the composable horizontally.
 //slideInVertically: Slides in the composable vertically.
 //slideOutVertically: Slides out the composable vertically.
+
+sealed class NavArgus(name:String){
+    object name :NavArgus("name")
+}
