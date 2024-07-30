@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.paginationjetpackcompose.ui.screens.ItemList1
+import com.example.paginationjetpackcompose.ui.screens.PullToRefreshImplementation
 import com.example.paginationjetpackcompose.ui.theme.CompoosePreperationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +21,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CompoosePreperationsTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                   ItemList1(modifier = Modifier.padding(innerPadding))
-                }
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                   ItemList1(modifier = Modifier.padding(innerPadding))
+//                }
+                PullToRefreshImplementation()
             }
         }
     }
