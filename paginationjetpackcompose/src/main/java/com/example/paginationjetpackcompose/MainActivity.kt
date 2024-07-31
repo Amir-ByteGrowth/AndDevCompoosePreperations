@@ -21,10 +21,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CompoosePreperationsTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                   ItemList1(modifier = Modifier.padding(innerPadding))
-//                }
-                PullToRefreshImplementation()
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                   ItemList1(modifier = Modifier.padding(innerPadding))
+                }
+//                PullToRefreshImplementation()
             }
         }
     }

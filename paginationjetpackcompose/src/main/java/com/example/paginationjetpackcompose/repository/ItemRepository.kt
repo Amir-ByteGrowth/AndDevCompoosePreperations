@@ -22,7 +22,7 @@ class ItemRepository {
 class ItemPagingSource : PagingSource<Int, Item>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item> {
-        delay(1222)
+        delay(2222)
         val page = params.key ?: 0
         val items = List(20) { Item(it + page * 20, "Item ${it + page * 20}") }
         return LoadResult.Page(

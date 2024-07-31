@@ -1,6 +1,7 @@
 package com.example.paginationjetpackcompose.ui.screens
 
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
@@ -9,24 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.paginationjetpackcompose.repository.ItemRepository
-
-
-
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-
-
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-
-import androidx.compose.ui.unit.dp
-
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import kotlinx.coroutines.flow.Flow
-import androidx.paging.PagingData
+import com.example.paginationjetpackcompose.models.Item
+import com.example.paginationjetpackcompose.repository.ItemRepository
 
 
 @Composable
@@ -35,7 +23,13 @@ fun ItemList1(
     viewModel: ItemListViewModel = ItemListViewModel(repository = ItemRepository()),
 ) {
     val items1 = viewModel.items.collectAsLazyPagingItems()
+    ListContent(modifier = modifier.fillMaxSize(), items1 = items1)
 
+}
+
+
+@Composable
+fun ListContent(modifier: Modifier = Modifier, items1: LazyPagingItems<Item>) {
     LazyColumn(modifier = modifier) {
 
         items(items1) { item ->
@@ -77,5 +71,6 @@ fun ItemList1(
         }
     }
 }
+
 
 
