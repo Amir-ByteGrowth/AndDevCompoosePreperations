@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
 import com.example.compoosepreperations.ui.screens.disposablesideeffects.DisposableSideEffectHomeScreen
 import com.example.compoosepreperations.ui.screens.launcheffects.LaunchEffectsScreen
+import com.example.compoosepreperations.ui.screens.mutexvsimmutex.MutexScreen
 import com.example.compoosepreperations.ui.screens.producestateeffectscreen.ProduceEffectScreen
 import com.example.compoosepreperations.ui.screens.producestateeffectscreen.UserProduceStateEffect
 import com.example.compoosepreperations.ui.screens.rememberupdatedstateeffect.MainCompo
@@ -46,7 +47,8 @@ class MainActivity : ComponentActivity() {
 
 //                    SideEffectsScreen()
 //                    ProduceEffectScreen()
-                    UserProduceStateEffect()
+//                    UserProduceStateEffect()
+                    MutexScreen()
                 }
             }
         }
