@@ -6,7 +6,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.locks.ReentrantLock
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.withLock
 
 class MutexViewModel : ViewModel() {
     val mutex = Mutex()
@@ -29,6 +33,34 @@ class MutexViewModel : ViewModel() {
             delay(100) // Simulating some work
             sharedResource = temp + 1
             println("1 Resource incremented to $sharedResource")
+        }
+    }
+
+    val mutex1 = Mutex()
+
+    suspend fun accessSharedResource2() {
+        mutex1.lock()
+        try {
+            // Access the shared resource safely
+            val temp = sharedResource
+            delay(100) // Simulating some work
+            sharedResource = temp + 1
+            println("2 Resource incremented to $sharedResource")
+        } finally {
+            mutex1.unlock()
+        }
+    }
+
+    suspend fun accessSharedResource3() {
+        mutex1.lock()
+        try {
+            // Access the shared resource safely
+            val temp = sharedResource
+            delay(100) // Simulating some work
+            sharedResource = temp + 1
+            println("3 Resource incremented to $sharedResource")
+        } finally {
+            mutex1.unlock()
         }
     }
 
@@ -232,5 +264,164 @@ class MutexViewModel : ViewModel() {
         }
 
         jobs1.forEach { it.join() }
+
+        val jobs2 = List(10) {
+            launch {
+                repeat(10) {
+                    accessSharedResource2()
+                }
+            }
+        }
+
+        jobs2.forEach { it.join() }
+
+        val jobs3 = List(10) {
+            launch {
+                repeat(10) {
+                    accessSharedResource3()
+                }
+            }
+        }
+
+        jobs3.forEach { it.join() }
     }
+
+
+    val semaphore = Semaphore(3) // Allowing 3 threads concurrently
+
+    suspend fun accessSharedResource() {
+        semaphore.acquire()
+        try {
+            // Access the shared resource
+            val temp = sharedResource
+            delay(100) // Simulating some work
+            sharedResource = temp + 1
+            println("Resource incremented to $sharedResource")
+        } finally {
+            semaphore.release()
+        }
+    }
+
+
+    fun mainSemaphore() = viewModelScope.launch {
+        val jobs = List(10) {
+            launch {
+                repeat(10) {
+                    accessSharedResource()
+                }
+            }
+        }
+
+        jobs.forEach { it.join() }
+    }
+
+
+//    val reentrantLock = ReentrantLock()
+//
+//    fun accessSharedResource() {
+//        reentrantLock.lock()
+//        try {
+//            // Access the shared resource safely
+//        } finally {
+//            reentrantLock.unlock()
+//        }
+//    }
+
+
+    val reentrantLock = ReentrantLock()
+
+    suspend fun accessResource() {
+        delay(100)
+        reentrantLock.withLock {
+
+            // Access the shared resource
+            val temp = sharedResource
+            // Simulating some work
+            sharedResource = temp + 1
+            println("4Resource incremented to $sharedResource")
+        }
+
+
+    }
+
+    fun mainReentrantLock() = viewModelScope.launch {
+        val jobs = List(10) {
+            launch {
+                repeat(10) {
+                    accessResource()
+                }
+            }
+        }
+        jobs.forEach { it.join() }
+    }
+
+
+    /////
+    val readWriteLock = ReentrantReadWriteLock()
+
+    suspend fun readSharedResource() {
+        readWriteLock.readLock().lock()
+        try {
+            // Read from the shared resource
+            // Access the shared resource
+            val temp = sharedResource
+            delay(400)
+            // Simulating some work
+            sharedResource = temp + 1
+            println("6Resource incremented to $sharedResource")
+        } finally {
+            readWriteLock.readLock().unlock()
+        }
+    }
+
+    suspend fun writeSharedResource() {
+        readWriteLock.writeLock().lock()
+        try {
+            // Write to the shared resource
+            val temp = sharedResource
+            delay(400)
+            // Simulating some work
+            sharedResource = temp + 1
+            println("7Resource incremented to $sharedResource")
+        } finally {
+            readWriteLock.writeLock().unlock()
+        }
+    }
+
+
+    fun mainReadAndWrite() = viewModelScope.launch {
+        val jobs = List(10) {
+            launch {
+                repeat(10) {
+                    readSharedResource()
+
+                }
+            }
+        }
+        jobs.forEach { it.join() }
+
+        val jobs1 = List(10) {
+            launch {
+                repeat(10) {
+//                    readSharedResource()
+                    writeSharedResource()
+                }
+            }
+        }
+        jobs1.forEach { it.join() }
+    }
+
+
+    val reentrantMutex = ReentrantLock()
+  fun nomi() =  runBlocking {
+        launch {
+            reentrantMutex.lock()
+            try {
+                // critical section
+            } finally {
+                reentrantMutex.unlock()
+            }
+        }
+    }
+
 }

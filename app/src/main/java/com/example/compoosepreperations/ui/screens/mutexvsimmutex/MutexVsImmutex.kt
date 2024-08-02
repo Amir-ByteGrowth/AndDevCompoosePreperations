@@ -10,8 +10,10 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun MutexScreen(modifier: Modifier = Modifier, mutexViewModel: MutexViewModel = MutexViewModel()) {
-    mutexViewModel.main()
-
+//    mutexViewModel.main()
+//mutexViewModel.mainSemaphore()
+//    mutexViewModel.mainReentrantLock()
+    mutexViewModel.  mainReadAndWrite()
     Box(modifier = modifier
         .fillMaxSize()
         .background(Color.Red))

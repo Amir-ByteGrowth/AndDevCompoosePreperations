@@ -1,0 +1,190 @@
+In Kotlin, Mutex and ReentrantMutex are two synchronization primitives provided to manage concurrent
+access to shared resources, but they have different characteristics and use cases. Here’s a comparison
+between the two:
+
+    Mutex
+        Definition:
+            A Mutex (mutual exclusion) is a locking mechanism used to ensure that only one coroutine
+            can access a critical section of code at a time.
+            Non-Reentrant: Mutex is non-reentrant, meaning if a coroutine that already holds the lock tries to
+            acquire it again, it will be suspended.
+            Usage:
+    kotlin
+
+            val mutex = Mutex()
+            runBlocking {
+                launch {
+                    mutex.withLock {
+                        // critical section
+                    }
+                }
+            }
+            Suspendable: Mutex can suspend the coroutine trying to acquire it, which means it works
+            well with Kotlin coroutines and ensures that the coroutine is resumed when the lock becomes
+            available.
+            Fairness: It provides fairness by granting the lock to the first coroutine that requested it.
+
+    ReentrantMutex
+    Definition: A ReentrantMutex is similar to a standard Mutex but allows the same coroutine to acquire
+    the lock multiple times without causing a deadlock.
+    Reentrant: ReentrantMutex is reentrant, meaning that if a coroutine that already holds the lock
+    tries to acquire it again, it will succeed without suspension.
+    Usage:
+    kotlin
+            val reentrantMutex = ReentrantLock()
+            runBlocking {
+        launch {
+            reentrantMutex.lock()
+            try {
+                // critical section
+            } finally {
+                reentrantMutex.unlock()
+            }
+        }
+    }
+    Thread-Based: ReentrantMutex (or ReentrantLock from the java.util.concurrent.locks package) is
+    based on threads and is not specifically designed for Kotlin coroutines. It can lead to blocking
+    threads rather than suspending coroutines, which may be less efficient in a coroutine context.
+Both Examples
+var counter = 0
+val mutex = Mutex()
+
+fun main() = runBlocking {
+    val coroutines = List(100) {
+        launch {
+            repeat(1000) {
+                mutex.withLock {
+                    counter++
+                }
+            }
+        }
+    }
+
+    coroutines.forEach { it.join() }
+    println("Final counter value: $counter")
+}
+
+
+Example with ReentrantMutex
+Now, let's consider an example where reentrancy is necessary. Suppose you have a complex computation that involves multiple steps, and one of those steps needs to call a function that also requires the same lock.
+
+kotlin
+Copy code
+import java.util.concurrent.locks.ReentrantLock
+
+val reentrantLock = ReentrantLock()
+
+fun main() {
+    runBlocking {
+        val coroutines = List(100) {
+            launch {
+                reentrantLock.lock()
+                try {
+                    complexOperation()
+                } finally {
+                    reentrantLock.unlock()
+                }
+            }
+        }
+
+        coroutines.forEach { it.join() }
+    }
+}
+
+fun complexOperation() {
+    reentrantLock.lock()
+    try {
+        // Perform some operation
+        nestedOperation()
+    } finally {
+        reentrantLock.unlock()
+    }
+}
+
+fun nestedOperation() {
+    reentrantLock.lock()
+    try {
+        // Perform some nested operation
+    } finally {
+        reentrantLock.unlock()
+    }
+}
+In this example:
+
+We use a ReentrantLock to protect the critical sections.
+complexOperation acquires the lock and calls nestedOperation, which also needs the same lock.
+ReentrantLock allows the same coroutine to re-enter the lock, thus preventing a deadlock.
+
+
+
+In concurrent programming, where multiple threads operate on shared data simultaneously, it is crucial
+to ensure thread safety to avoid race conditions and data inconsistencies. Kotlin, a modern programming
+language for the JVM, provides several lock types that enable developers to synchronize access to shared
+resources. In this article, we will explore some commonly used lock types in Kotlin and provide code
+examples to illustrate their usage.
+Mutex Lock: The Mutex (Mutual Exclusion) lock is a basic lock type in Kotlin that allows only one thread
+to access a shared resource at a time. It provides two essential functions: lock() and unlock(). When
+a thread calls lock(), it acquires the lock, and other threads attempting to acquire the lock will be
+blocked until the lock is released using unlock(). This ensures exclusive access to the shared resource,
+preventing data races and inconsistencies. Here's an example:
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+
+val mutex = Mutex()
+
+suspend fun accessSharedResource() {
+    mutex.lock()
+    try {
+        // Access the shared resource safely
+    } finally {
+        mutex.unlock()
+    }
+}
+2. ReadWrite Lock: The ReadWriteLock allows concurrent access to a shared resource for read operations but exclusive access for write operations. Multiple threads can acquire the read lock simultaneously, but only one thread can acquire the write lock. This lock type is suitable when the shared resource is read more frequently than it is modified. The ReadWriteLock implementation in Kotlin is provided by the ReentrantReadWriteLock class. Here's an example:
+import java.util.concurrent.locks.ReentrantReadWriteLock
+
+val readWriteLock = ReentrantReadWriteLock()
+
+fun readSharedResource() {
+    readWriteLock.readLock().lock()
+    try {
+        // Read from the shared resource
+    } finally {
+        readWriteLock.readLock().unlock()
+    }
+}
+
+fun writeSharedResource() {
+    readWriteLock.writeLock().lock()
+    try {
+        // Write to the shared resource
+    } finally {
+        readWriteLock.writeLock().unlock()
+    }
+}
+3. Semaphore: A Semaphore is a lock type that allows a fixed number of threads to access a shared resource concurrently. It maintains a counter that limits the number of threads allowed to acquire the lock. Once the limit is reached, subsequent threads are blocked until a thread releases the lock. This lock type is useful in scenarios where you want to control the level of concurrency. The Semaphore class in Kotlin provides the necessary functions acquire() and release() for acquiring and releasing the lock, respectively. Here's an example:
+import java.util.concurrent.Semaphore
+
+val semaphore = Semaphore(3) // Allowing 3 threads concurrently
+
+fun accessSharedResource() {
+    semaphore.acquire()
+    try {
+        // Access the shared resource
+    } finally {
+        semaphore.release()
+    }
+}
+4. Reentrant Lock: The ReentrantLock is a more flexible lock type compared to the Mutex. It allows a thread to repeatedly acquire the lock, making it "reentrant." This means that a thread holding the lock can enter the lock multiple times without deadlocking itself. It provides functions like lock() and unlock(), similar to the Mutex lock. Here's an example:
+import java.util.concurrent.locks.ReentrantLock
+
+val reentrantLock = ReentrantLock()
+
+fun accessSharedResource() {
+    reentrantLock.lock()
+    try {
+        // Access the shared resource safely
+    } finally {
+        reentrantLock.unlock()
+    }
+}
