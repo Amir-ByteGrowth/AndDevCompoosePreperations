@@ -23,6 +23,7 @@ fun UserMainModel.toSimpleUser(): SimpleUser {
 //
 //The mapping function using reflection looks like this:
 
+//it is slow in performance
 fun UserMainModel.toSimpleUserUsingReflection() = with(::SimpleUser1) {
     val propertiesByName = UserMainModel::class.memberProperties.associateBy { it.name }
     callBy(parameters.associate { parameter ->
