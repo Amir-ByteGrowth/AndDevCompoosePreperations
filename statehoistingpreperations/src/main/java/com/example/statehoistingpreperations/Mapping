@@ -1,0 +1,125 @@
+Mapping between different objects or data structures
+
+
+1. Intro
+
+When working with a legacy code base, using an external library or integrating against a framework,
+we regularly have use cases where we want to map between different objects or data structures.
+
+2. Simple Extension Function
+
+Let’s use the following example: We have a class User, which might be a class from our core domain.
+It’s also possible that it’s an entity we load from a relational database.
+
+data class User(
+  val firstName: String,
+  val lastName: String,
+  val street: String,
+  val houseNumber: String,
+  val phone: String,
+  val age: Int,
+  val password: String)
+Copy
+Now we want to provide a different view on this data. We’ve decided to call this class UserView and
+we can imagine it being used as a response send from a web controller. While it’s representing the
+same data in our domain, some fields are an aggregate of the fields of our User class and some fields
+simply have a different name:
+
+data class UserView(
+  val name: String,
+  val address: String,
+  val telephone: String,
+  val age: Int
+)
+Copy
+What we need now is a mapping function, that will map User->UserView. Since UserView is on the outer
+layer of our application, we don’t want to add this function to our User class. We also don’t want to
+break the encapsulation of our User class and use a helper class to reach into our User object and pull
+out its data, in order to create an UserView object.
+
+Fortunately, Kotlin provides a language feature called Extension Functions. We can define an Extension
+Function on our User class and make it only accessible inside the package scope it which we defined it:
+
+fun User.toUserView() = UserView(
+  name = "$firstName $lastName",
+  address = "$street $houseNumber",
+  telephone = phone,
+  age = age
+)
+Copy
+Let’s use this function inside a test to get a feeling of how to use it:
+
+class UserTest {
+
+    @Test
+    fun `maps User to UserResponse using extension function`() {
+        val p = buildUser()
+        val view = p.toUserView()
+        assertUserView(view)
+    }
+
+    private fun buildUser(): User {
+        return User(
+          "Java",
+          "Duke",
+          "Javastreet",
+          "42",
+          "1234567",
+          30,
+          "s3cr37"
+        )
+    }
+
+    private fun assertUserView(pr: UserView) {
+        assertAll(
+          { assertEquals("Java Duke", pr.name) },
+          { assertEquals("Javastreet 42", pr.address) },
+          { assertEquals("1234567", pr.telephone) },
+          { assertEquals(30, pr.age) }
+        )
+    }
+Copy
+3. Kotlin Reflection Features
+
+While the example above is very simple (and therefore recommended for most use cases), it still involves
+a bit of boilerplate code. What if we have a class with a lot of fields (maybe hundreds) and most of
+them have to be mapped to the field with the same name in the target class?
+
+In this case, we can think about using the Kotlin Reflection features to avoid writing most of the mapping code.
+
+The mapping function using reflection looks like this:
+
+fun User.toUserViewReflection() = with(::UserView) {
+    val propertiesByName = User::class.memberProperties.associateBy { it.name }
+    callBy(parameters.associate { parameter ->
+        parameter to when (parameter.name) {
+            UserView::name.name -> "$firstName $lastName"
+            UserView::address.name -> "$street $houseNumber"
+            UserView::telephone.name -> phone
+            else -> propertiesByName[parameter.name]?.get(this@toUserViewReflection)
+        }
+    })
+}
+Copy
+We are using the UserView default constructor as the method call receiver by using the Kotlin with()
+function. Inside the lambda function provided to with(), we use reflection to obtain a Map of member
+properties (with the member name as the key and the member property as the value) using User::class.memberProperties.associateBy { it.name }.
+
+Next, we call the UserView constructor with a custom parameter mapping. Inside the lambda we provide a
+conditional mapping, using the when keyword.
+
+An interesting fact is, that we can map the actual parameter names we retrieve using reflection, like
+UserView::name.name instead of simple Strings. This means we can completely leverage the Kotlin compiler
+here, helping us in case of refactorings without fearing that our code may break.
+
+We have some special mappings for the parameters name, address, and telephone, while we use a default
+name based mapping for every other field.
+
+While the reflection-based approach seems very interesting at first sight, keep in mind that this
+introduces additional complexity into the code base and using reflection might have a negative impact on runtime performance.
+
+4. Conclusion
+
+We’ve seen, that we can easily solve simple data mapping use cases using built-in Kotlin language features.
+While writing the mapping code by hand is fine for simple use cases, we can also write more complex solutions using reflection.
+
