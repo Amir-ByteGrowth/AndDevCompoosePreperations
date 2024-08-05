@@ -3,7 +3,7 @@ package com.example.statehoistingpreperations.mapper
 
 data class UserMainModel(
     val id: Int,
-    val name: String,
+    val fname: String,
     val lastName: String,
     val email: String,
     val phone: String,

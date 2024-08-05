@@ -72,4 +72,6 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation ("androidx.navigation:navigation-compose:2.7.6")
 
+    implementation ("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+
 }

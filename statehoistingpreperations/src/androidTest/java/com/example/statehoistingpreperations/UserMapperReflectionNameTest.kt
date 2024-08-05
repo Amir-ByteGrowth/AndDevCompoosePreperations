@@ -1,16 +1,17 @@
 package com.example.statehoistingpreperations
 
 import com.example.statehoistingpreperations.mapper.SimpleUser
+import com.example.statehoistingpreperations.mapper.SimpleUser1
 import com.example.statehoistingpreperations.mapper.UserMainModel
 import com.example.statehoistingpreperations.mapper.toSimpleUser
+import com.example.statehoistingpreperations.mapper.toSimpleUserUsingReflection
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
-class UserMapperTest {
-
+class UserMapperReflectionNameTest {
     @Test
     fun mapUserToSimpleUserUsingExtensionFunction() {
-        asserSimpleUser(buildUser().toSimpleUser())
+        asserSimpleUser(buildUser().toSimpleUserUsingReflection())
     }
 
     private fun buildUser(): UserMainModel {
@@ -30,12 +31,11 @@ class UserMapperTest {
     }
 
 
-    private fun asserSimpleUser(simpleUser: SimpleUser) {
+    private fun asserSimpleUser(simpleUser: SimpleUser1) {
 
-        assertEquals("amir, javeed", simpleUser.name)
+        assertEquals("javeed, amir", simpleUser.name)
         assertEquals("abc, def, 1", simpleUser.address)
         assertEquals("email, 052", simpleUser.contact)
 
     }
-
 }
