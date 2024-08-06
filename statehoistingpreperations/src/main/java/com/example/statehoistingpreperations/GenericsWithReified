@@ -1,0 +1,49 @@
+Introduction
+Before getting started, Lets discuss on Generics. Generics are used to provide general implementation
+of a classes or function or interfaces.
+Here is the sample generic method
+
+In above code, you can pass any type of data to displayValue method.
+Now lets try to print what is the type of T. Run below code and see the output
+
+You will see below error after executing above code
+Cannot use ‘T’ as reified type parameter. Use a class instead.
+The reason is, like java, in kotlin also, type information will be erasured during compile time
+when you use generics, the type information is removed at compile-time. This process is known as type
+erasure. For instance, if you have a List<String>, at runtime, it's just treated as a plain List
+without any knowledge of its type parameter.
+This means you can’t perform operations like checking if an object is of a generic type at runtime.
+To solve this, we need to pass type to generic function like below
+
+To avoid to write above boilerplate code, kotlin provides reified keyword to access the type at run
+time. Lets see the code below
+
+The keyword reified enables you to access the type of info at runtime that should have been erased
+during code compilation. The reified keyword uses an inline function to perform this task.
+If a function is marked as inline , then wherever the function is called, the compiler will paste
+the whole body of the function there.
+Apart from the above use case, there are other things that can be done using reified. For example,
+we can use functions with the same arguments and name but different return type .
+Lets say, i want to write a function to return different data based on marks
+fun displayData(marks: Int): Int {
+  return marks
+}
+
+fun displayData(marks: Int): String {
+  return "Congratulations! you scored more than 90%";
+}
+The above overloaded function will throw an error because, for function overloading, the number of
+arguments or type of arguments should differ and not the return type.
+To solve this, We can refactor the above functions by using reified keyword
+
+Limitations
+One of the primary constraints is that reified type parameters can only be used with inline functions.
+This linkage is due to how reified types preserve type information by inlining the function code at the call site.
+Reified type parameters cannot represent some complex or non-denotable types. For instance, you
+cannot have a reified parameter for types like List<Int> or Array<String> directly.
+inline fun <reified T> printList(list: List<T>) {
+    // This won't work as expected for types like List<Int>
+}
+Reified type parameters can’t be used in certain scenarios, like as type arguments for non-inline
+functions, in object declarations, or as property types in a class.
+class SampleClass<reified T> { ... } //This will not work
