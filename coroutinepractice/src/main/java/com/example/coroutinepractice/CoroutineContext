@@ -1,0 +1,49 @@
+What is co routine context and used for?
+
+Coroutine context is combination of four things that define behaviour of coroutine . it describes on
+which thread coroutine will work, the exception handler , coroutine name and job (like simple job or
+supervisor job)
+
+1- Job — controls the lifecycle of the coroutine.
+2- CoroutineDispatcher — dispatches work to the appropriate thread.
+3- CoroutineName — name of the coroutine, useful for debugging.
+4- CoroutineExceptionHandler — handles uncaught exceptions, will be covered in Part 3 of the series.
+
+
+
+Parent CoroutineContext explained
+In the task hierarchy, each coroutine has a parent that can be either a CoroutineScope or another
+coroutine. However, the resulting parent CoroutineContext of a coroutine can be different from the
+CoroutineContext of the parent since it’s calculated based on this formula:
+Parent context = Defaults + inherited CoroutineContext + arguments
+Where:
+Some elements have default values: Dispatchers.Default is the default of CoroutineDispatcher
+and “coroutine” the default of CoroutineName.
+The inherited CoroutineContext is the CoroutineContext of the CoroutineScope or coroutine that created it.
+Arguments passed in the coroutine builder will take precedence over those elements in the inherited context.
+Note: CoroutineContexts can be combined using the + operator. As the CoroutineContext is a set of
+elements, a new CoroutineContext will be created with the elements on the right side of the plus
+overriding those on the left. E.g. (Dispatchers.Main, “name”) + (Dispatchers.IO) = (Dispatchers.IO, “name”)
+
+Every coroutine started by this CoroutineScope will have at least those elements in the CoroutineContext.
+CoroutineName is gray because it comes from the default values.
+Now that we know what’s the parent CoroutineContext of a new coroutine, its actual CoroutineContext will be:
+New coroutine context = parent CoroutineContext + Job()
+If with the CoroutineScope shown in the image above we create a new coroutine like this:
+val job = scope.launch(Dispatchers.IO) {
+    // new coroutine
+}
+What’s the parent CoroutineContext of that coroutine and its actual CoroutineContext? See the solution in the image below!
+
+The Job in the CoroutineContext and in the parent context will never be the same instance as a new
+coroutine always get a new instance of a Job
+The resulting parent CoroutineContext has Dispatchers.IO instead of the scope’s CoroutineDispatcher
+since it was overridden by the argument of the coroutine builder. Also, check that the Job in the parent
+CoroutineContext is the instance of the scope’s Job (red color), and a new instance of Job (green color)
+has been assigned to the actual CoroutineContext of the new coroutine.
+As we will see in Part 3 of the series, a CoroutineScope can have a different implementation of Job called
+ SupervisorJob in its CoroutineContext that changes how the CoroutineScope deals with exceptions. Therefore,
+ a new coroutine created with that scope can have SupervisorJob as a parent Job. However, when the parent of a
+ coroutine is another coroutine, the parent Job will always be of type Job.
+
+ https://medium.com/androiddevelopers/coroutines-first-things-first-e6187bf3bb21

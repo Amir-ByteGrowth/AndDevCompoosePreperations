@@ -1,0 +1,85 @@
+What is job?
+job is a unit of work that is executed concurrently. They manage the lifecycle and control the execution of coroutines.
+they control the execution of coroutine
+Please define job lifecycle
+job go through this life
+                New
+                active
+                from active it can go to completing or canceling
+                form canceling it  will finished and cancelled (isCompleted = true and isCancelled = true)
+                from active it will go to finish then completed  (isCompleted = true and isCancelled=false)
+
+Note * If the coroutine is in an active state, the failure of the coroutine or calling job.cancel()
+will move the job in the Cancelling state (isActive = false, isCancelled = true). Once all children
+have completed their work the coroutine will go in the Cancelled state and isCompleted = true.
+
+Kinds of jobs
+    1- Standalone Jobs
+       A standalone job is a basic coroutine that runs independently of any other coroutines.
+       You can start it using the launch function without attaching it to any parent job or scope.
+       val job = GlobalScope.launch {
+           // Perform some work here
+       }
+    2. Parent and Child Jobs
+       In a structured concurrency model, a parent job can spawn child jobs. If a parent job is canceled,
+       all of its child jobs are also canceled. This ensures that resources are managed efficiently.
+        val parentJob = GlobalScope.launch {
+        val childJob1 = launch {
+            // Child job 1 work
+        }
+        val childJob2 = launch {
+            // Child job 2 work
+        }
+        }
+    3. Supervisor Job
+       A supervisor job allows its child coroutines to fail independently. If a child coroutine fails,
+       it does not affect the other child coroutines or the parent coroutine. This is useful when
+       you want to handle failures separately for each child coroutine.
+       val supervisorJob = SupervisorJob()
+
+       val scope = CoroutineScope(Dispatchers.Main + supervisorJob)
+
+       scope.launch {
+           val childJob1 = launch {
+               // Child job 1 work
+           }
+           val childJob2 = launch {
+               // Child job 2 work
+           }
+       }
+    4. Cancelable Job
+       All coroutines in Kotlin are cancelable by default. You can cancel a job by calling cancel()
+       on it, which will stop its execution and release its resources.
+       val job = GlobalScope.launch {
+           repeat(1000) { i ->
+               if (!isActive) return@launch
+               println("Job: I'm working $i ...")
+           }
+       }
+
+       Thread.sleep(500L)
+       job.cancel() // cancels the job
+    5. Completable Job
+        A completable job is a job that can be completed manually by calling complete() on it. This is
+        useful for scenarios where you need to perform some operations after certain conditions are met.
+
+        val job = Job()
+        GlobalScope.launch {
+            // Do some work
+            job.complete() // Manually complete the job
+        }
+
+        job.invokeOnCompletion {
+            println("Job is completed")
+        }
+    6. Lazy Job
+        A lazy job is a coroutine that does not start execution until explicitly started. You can
+        create a lazy coroutine by setting the start parameter to CoroutineStart.LAZY in the launch
+        or async function.
+
+        val job = GlobalScope.launch(start = CoroutineStart.LAZY) {
+            // Work to be done
+        }
+
+           // Start the job manually
+        job.start()
