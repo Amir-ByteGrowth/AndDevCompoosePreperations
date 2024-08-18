@@ -9,15 +9,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 
 class MainViewModel :ViewModel() {
 
 
-    fun getData(){
-        viewModelScope.launch {
 
-        }
-    }
+
 
 
     fun main () = runBlocking {

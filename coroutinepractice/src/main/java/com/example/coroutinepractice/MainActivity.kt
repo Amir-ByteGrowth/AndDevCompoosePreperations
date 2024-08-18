@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
@@ -31,6 +32,14 @@ class MainActivity : AppCompatActivity() {
         val customCoroutineScope = CustomCoroutineScope()
         customCoroutineScope.startTask()
         customCoroutineScope.stop()
+
+        //handle exceptions in coroutine
+//        lifecycleScope.launch {
+//            val repository = Repository(MyApplication().applicationScope, Dispatchers.IO)
+////            repository.doWork()
+//            repository.doWork1()
+//        }
+
 
     }
 

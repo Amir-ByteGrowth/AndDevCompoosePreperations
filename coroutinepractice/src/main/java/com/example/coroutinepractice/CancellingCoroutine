@@ -1,0 +1,179 @@
+Calling cancel
+When launching multiple coroutines, it can be a pain to keep track of them or cancel each individually.
+Rather, we can rely on cancelling the entire scope coroutines are launched into as this will cancel
+all of the child coroutines created:
+// assume we have a scope defined for this layer of the app
+val job1 = scope.launch { … }
+val job2 = scope.launch { … }
+scope.cancel()
+
+Cancelling the scope cancels its children
+Sometimes you might need to cancel only one coroutine, maybe as a reaction to a user input.
+Calling job1.cancel ensures that only that specific coroutine gets cancelled and all the other siblings are not affected:
+// assume we have a scope defined for this layer of the app
+val job1 = scope.launch { … }
+val job2 = scope.launch { … }
+// First coroutine will be cancelled and the other one won’t be affected
+job1.cancel()
+
+
+A cancelled child doesn’t affect other siblings
+Coroutines handle cancellation by throwing a special exception: CancellationException. If you want
+to provide more details on the cancellation reason you can provide an instance of CancellationException
+when calling .cancel as this is the full method signature:
+fun cancel(cause: CancellationException? = null)
+If you don’t provide your own CancellationException instance, a default CancellationException will be created (full code here):
+public override fun cancel(cause: CancellationException?) {
+    cancelInternal(cause ?: defaultCancellationException())
+}
+Because CancellationException is thrown, then you will be able to use this mechanism to handle the
+coroutine cancellation. More about how to do this in the Handling cancellation side effects section below.\
+
+⚠️Once you cancel a scope, you won’t be able to launch new coroutines in the cancelled scope.
+If you’re using the androidx KTX libraries in most cases you don’t create your own scopes and
+therefore you’re not responsible for cancelling them. If you’re working in the scope of a ViewModel,
+using viewModelScope or, if you want to launch coroutines tied to a lifecycle scope, you would use the
+lifecycleScope. Both viewModelScope and lifecycleScope are CoroutineScope objects that get cancelled
+at the right time. For example, when the ViewModel is cleared, it cancels the coroutines launched in
+its scope.
+
+
+Why isn’t my coroutine work stopping?
+If we just call cancel, it doesn’t mean that the coroutine work will just stop. If you’re performing
+some relatively heavy computation, like reading from multiple files, there’s nothing that automatically
+stops your code from running.
+Let’s take a more simple example and see what happens. Let’s say that we need to print “Hello” twice a
+second using coroutines. We’re going to let the coroutine run for a second and then cancel it. One
+version of the implementation can look like this:
+
+Let’s see what happens step by step. When calling launch, we’re creating a new coroutine in the active
+state. We’re letting the coroutine run for 1000ms. So now we see printed:
+Hello 0
+Hello 1
+Hello 2
+Once job.cancel is called, our coroutine moves to Cancelling state. But then, we see that Hello 3
+and Hello 4 are printed to the terminal. Only after the work is done, the coroutine moves to Cancelled state.
+The coroutine work doesn’t just stop when cancel is called. Rather, we need to modify our code and
+check if the coroutine is active periodically.
+Cancellation of coroutine code needs to be cooperative!
+
+
+
+Making your coroutine work cancellable
+You need to make sure that all the coroutine work you’re implementing is cooperative with cancellation,
+therefore you need to check for cancellation periodically or before beginning any long running work.
+For example, if you’re reading multiple files from disk, before you start reading each file, check
+whether the coroutine was cancelled or not. Like this you avoid doing CPU intensive work when it’s not needed anymore.
+val job = launch {
+    for(file in files) {
+        // TODO check for cancellation
+        readFile(file)
+    }
+}
+All suspend functions from kotlinx.coroutines are cancellable: withContext, delay etc. So if you’re
+using any of them you don’t need to check for cancellation and stop execution or throw a CancellationException.
+But, if you’re not using them, to make your coroutine code cooperative we have two options:
+Checking job.isActive or ensureActive()
+Let other work happen using yield()
+Checking for job’s active state
+One option is in our while(i<5) to add another check for the coroutine state:
+// Since we're in the launch block, we have access to job.isActive
+while (i < 5 && isActive)
+
+
+Job.join vs Deferred.await cancellation
+There are two ways to wait for a result from a coroutine: jobs returned from launch can call join
+and Deferred (a type of Job) returned from async can be await’d.
+Job.join suspends a coroutine until the work is completed. Together with job.cancel it behaves as you’d expect:
+If you’re calling job.cancel then job.join, the coroutine will suspend until the job is completed.
+Calling job.cancel after job.join has no effect, as the job is already completed.
+
+
+You use a Deferred when you are interested in the result of the coroutine. This result is returned
+by Deferred.await when the coroutine is completed. Deferred is a type of Job, and it can also be cancelled.
+Calling await on a deferred that was cancelled throws a JobCancellationException.
+val deferred = async { … }
+deferred.cancel()
+val result = deferred.await() // throws JobCancellationException!
+
+
+Here’s why we get the exception: the role of await is to suspend the coroutine until the result is
+computed; since the coroutine is cancelled, the result cannot be computed. Therefore, calling await
+after cancel leads to JobCancellationException: Job was cancelled.
+On the other hand, if you’re calling deferred.cancel after deferred.await nothing happens, as the
+coroutine is already completed.
+
+
+
+Handling cancellation side effects
+Let’s say that you want to execute a specific action when a coroutine is cancelled: closing any resources you might be using, logging the cancellation or some other cleanup code you want to execute. There are several ways we can do this:
+Check for !isActive
+If you’re periodically checking for isActive, then once you’re out of the while loop, you can clean up the resources. Our code above could be updated to:
+while (i < 5 && isActive) {
+    // print a message twice a second
+    if (…) {
+        println(“Hello ${i++}”)
+        nextPrintTime += 500L
+    }
+}
+// the coroutine work is completed so we can cleanup
+println(“Clean up!”)
+See it in action here.
+So now, when the coroutine is no longer active, the while will break and we can do our cleanup.
+Try catch finally
+Since a CancellationException is thrown when a coroutine is cancelled, then we can wrap our suspending work in try/catch and in the finally block, we can implement our clean up work.
+val job = launch {
+   try {
+      work()
+   } catch (e: CancellationException){
+      println(“Work cancelled!”)
+    } finally {
+      println(“Clean up!”)
+    }
+}
+delay(1000L)
+println(“Cancel!”)
+job.cancel()
+println(“Done!”)
+But, if the cleanup work we need to execute is suspending, the code above won’t work anymore, as once
+ the coroutine is in Cancelling state, it can’t suspend anymore. See the full code here.
+A coroutine in the cancelling state is not able to suspend!
+To be able to call suspend functions when a coroutine is cancelled, we will need to switch the cleanup
+work we need to do in a NonCancellable CoroutineContext. This will allow the code to suspend and will
+keep the coroutine in the Cancelling state until the work is done.
+val job = launch {
+   try {
+      work()
+   } catch (e: CancellationException){
+      println(“Work cancelled!”)
+    } finally {
+      withContext(NonCancellable){
+         delay(1000L) // or some other suspend fun
+         println(“Cleanup done!”)
+      }
+    }
+}
+delay(1000L)
+println(“Cancel!”)
+job.cancel()
+println(“Done!”)
+Check out how this works in practice here.
+suspendCancellableCoroutine and invokeOnCancellation
+If you converted callbacks to coroutines by using the suspendCoroutine method, then prefer using
+suspendCancellableCoroutine instead. The work to be done on cancellation can be implemented using continuation.invokeOnCancellation:
+suspend fun work() {
+   return suspendCancellableCoroutine { continuation ->
+       continuation.invokeOnCancellation {
+          // do cleanup
+       }
+   // rest of the implementation
+}
+To realise the benefits of structured concurrency and ensure that we’re not doing unnecessary work
+you need to make sure that you’re also making your code cancellable.
+Use the CoroutineScopes defined in Jetpack: viewModelScope or lifecycleScope that cancels their work
+when their scope completes. If you’re creating your own CoroutineScope, make sure you’re tying it to
+a job and calling cancel when needed.
+The cancellation of coroutine code needs to be cooperative so make sure you update your code to check
+for cancellation to be lazy and avoid doing more work than necessary.
+
+
