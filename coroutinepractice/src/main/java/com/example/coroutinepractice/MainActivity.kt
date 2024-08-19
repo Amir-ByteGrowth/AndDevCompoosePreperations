@@ -19,6 +19,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.supervisorScope
 
 class MainActivity : AppCompatActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,6 +42,31 @@ class MainActivity : AppCompatActivity() {
 //            repository.doWork1()
 //        }
 
+//        runBlocking {
+//            getData()
+//        }
+// mainCheck6()
+//        mainCheck2()
+//        mainCoroutineExceptionHandlerWithLaunch()
+
+//        mainSuperVisorJob()
+//        mainThink()
+//        mainCheck6()
+//        asyncSupervisorScopeWithTryCatch()
+//        mainCheck5()
+        mainCheck()
+        //application will crash here
+//        runBlocking {
+//            launch {
+//                try {
+//                    launch {
+//                        throw Exception("Nested coroutine failed")
+//                    }.join()
+//                } catch (e: Exception) {
+//                    println("Caught exception: ${e.message}")
+//                }
+//            }
+//        }
 
     }
 
@@ -174,4 +201,6 @@ fun main() = runBlocking {
 
     println("outside jobs")
 }
+
+
 

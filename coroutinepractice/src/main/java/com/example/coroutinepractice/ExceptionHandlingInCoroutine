@@ -1,0 +1,75 @@
+
+
+In this article, we will learn how to handle exceptions in coroutines. you might be already aware about
+So moving forward to handle exceptions in coroutines. We all know that it is very complex to handle
+exceptions in coroutines. But don’t worry, by the end of this article you will be able to master exceptions in coroutines.
+
+A coroutine suddenly failed! What now? 😱
+When a coroutine fails with an exception, it will propagate said exception up to its parent! Then, the parent will
+1) cancel the rest of its children,
+2) cancel itself and
+3) propagate the exception up to its parent.
+
+Note *The exception will reach the root of the hierarchy and all the coroutines that the CoroutineScope started will get cancelled too.
+
+
+While propagating an exception can make sense in some cases, there are other cases when that’s undesirable.
+Imagine a UI-related CoroutineScope that processes user interactions. If a child coroutine throws an
+exception, the UI scope will be cancelled and the whole UI component will become unresponsive as a
+cancelled scope cannot start more coroutines.
+What if you don’t want that behavior? Alternatively, you can use a different implementation of Job,
+namely SupervisorJob, in the CoroutineContext of the CoroutineScope that creates these coroutines.
+
+
+
+Let’s start
+We will handle exceptions in coroutines using the two ways
+1. Try-catch
+2. CoroutineExceptionHandler
+What is try-catch?
+Try-catch block is used for exception handling in the code. The try block encloses the code which may
+throw an exception and the catch block is used to handle the exception.
+What is CoroutineExceptionHandler?
+An Element in the coroutine context to handle uncaught exceptions. It should be used in the root
+coroutine to handle all the child coroutine uncaught exceptions.
+We will cover all types of builder functions of coroutines with exception handling
+Here we are deliberately throwing an exception to test coroutines instead of calling some API or doing
+some background work which can unexpectedly run into exceptions.
+Let’s look at the launch builder function with try-catch.
+
+So in the above code you can see that we have started a coroutine with a launch builder function on an IO thread & inside the coroutine we are throwing an exception. In this case it works as expected as the exception is caught in the catch block.
+But when we launch another coroutine inside a try-catch block like below,
+
+In this case the exception will not be handled & the app will be crashed. The reason for this is that the inner coroutine completes exceptionally & the coroutine fails. But this seems confusing.
+Normally when we add a try-catch block to any normal function in Java/Kotlin, any exception inside the try block can be caught inside a respective catch block. So why the same thing doesn’t happen with coroutines?
+Because a normal function would re-throw that exception whereas it’s not the same in coroutines.
+If the try-catch block is not inside the coroutine then it does not re-throws exception & instead it propagates up to the job of Top-level coroutine/parent coroutine which is not able to handle it & uncaught exception handler of the thread is invoked, resulting into the app crash.
+If a Coroutine doesn’t handle exceptions by itself with a try-catch clause, the exception isn’t re-thrown and can’t, therefore, be handled by an outer try-catch clause. Instead, the exception is “propagated up the job hierarchy”.
+To handle the above case we need to add CoroutineExceptionHandler as shown in below code.
+
+When using CoroutineExceptionHandler, if one coroutine fails, then all child coroutines will get cancelled by default.
+In order for a CoroutineExceptionHandler to have an effect, it must be installed either in the CoroutineScope or in a top-level coroutine.
+Now moving ahead to handle exceptions with async/await.
+In async/await if we do not call await method then there will be no effect on our program & it will not throw the exception. The reason for this is that async returns a deferred result which can be fetched from the await method.
+
+Here, in the above code we have added CoroutineExceptionHandler to the parent coroutine scope which will handle all the exceptions inside this scope.
+We can also use try-catch with async/await to handle exceptions, but to handle exceptions with try-catch, we need to add a try-catch block on await method & not on the async method. So Let’s check the code below
+
+This way we can handle exceptions with try-catch in async/await coroutine scope.
+Exception handling properties of coroutineScope{ }
+When we talked about try-catch with Coroutines at the beginning of this article, I told you that a failing coroutine is propagating its exception up the job hierarchy instead of re-throwing it and therefore, an outer try-catch is ineffective.
+However, when we surround a failing coroutine with the coroutineScope{} scoping function, something interesting happens
+
+We are now able to handle the exception with a try-catch clause. So, the scoping function coroutineScope{} re-throws exceptions of its failing children instead of propagating them up the job hierarchy.
+coroutineScope{} is mainly used in suspend functions to achieve “parallel decomposition”. These suspend functions will re-throw exceptions of their failed coroutines and so we can set up our exception handling logic accordingly.
+The scoping function coroutineScope{} re-throws exceptions of its failed child coroutines instead of propagating them up the job hierarchy, which allows us to handle exceptions of failed coroutines with try-catch
+Exception Handling properties of supervisorScope{ }
+We have seen that in all the above cases if 1 coroutine fails, all other coroutines fail too. What if we need other coroutines to continue. Here SupervisorScope comes to the rescue.
+SupervisorScope creates a new independent nested sub-scope. It doesn’t re-throws exceptions like coroutineScope, neither it propagate exceptions to the parent coroutine scope.
+We can add CoroutineExceptionHandler or use try-catch to handle exceptions inside SupervisorScope.
+
+For async/await we need to add try-catch to make other coroutines work if one fails like below
+
+For withContext, we can use the same above ways to handle exceptions, just the coroutine builder will be changed & everything inside withContext will be executed sequentially.
+So, by this way we can Handle exceptions in Kotlin Coroutines.
+Happy coding & Safe exception handling.!!
