@@ -89,4 +89,6 @@ dependencies {
 
     // optional - Multiprocess support
     implementation("androidx.work:work-multiprocess:$work_version")
+
+    implementation ("com.google.guava:guava:32.1.2-android")
 }

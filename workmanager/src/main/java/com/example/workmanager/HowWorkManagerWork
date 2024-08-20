@@ -128,3 +128,11 @@ When targeting Android 12 or higher, foreground services remain available to you
 Caution: setForeground() can throw runtime exceptions on Android 12, and might throw an exception if the launch was restricted.
 
 Note* to overcome this crash we must override getForgroundinfo() in worker class
+
+Worker
+
+Workers don't know whether the work they're doing is expedited or not. But workers can display a
+notification on some versions of Android when a WorkRequest has been expedited.
+
+To enable this, WorkManager provides the getForegroundInfoAsync() or getForegroundInfo() or method, which you must implement so
+WorkManager can display a notification to start a ForegroundService for you where necessary.

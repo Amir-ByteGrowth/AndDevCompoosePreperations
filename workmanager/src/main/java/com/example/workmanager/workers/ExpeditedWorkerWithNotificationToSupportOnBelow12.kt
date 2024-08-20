@@ -10,9 +10,9 @@ import androidx.work.ForegroundInfo
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
-class ExpeditedWorker(
+class ExpeditedWorkerWithNotificationToSupportOnBelow12(
     context: Context,
-    workerParams: WorkerParameters
+    workerParams: WorkerParameters,
 ) : Worker(context, workerParams) {
 
     override fun doWork(): Result {
@@ -24,7 +24,20 @@ class ExpeditedWorker(
         }
         return Result.success()
     }
+//    override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
+//        val notificationId = 1
+//        val channelId = "expedited_work_channel"
+//        val notification = createNotification(channelId)
+//
+//        val completableFuture = SettableFuture.create<ForegroundInfo>()
+//        completableFuture.set(ForegroundInfo(notificationId, notification))
+//        return completableFuture
+//    }
 
+    // we can use either function to make it run on below 12 however following method is useful for
+    // performing synchronious task and return immediate result while above method is for asynchronous tasks
+    // and it may delay to reuslts provided by the nature of work it is used for data from network or
+    // database or somethingelse that can take time .
     override fun getForegroundInfo(): ForegroundInfo {
         val notificationId = 1
         val channelId = "expedited_work_channel"
