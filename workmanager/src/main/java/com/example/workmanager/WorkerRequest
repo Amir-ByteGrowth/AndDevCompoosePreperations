@@ -1,0 +1,50 @@
+Define work requests
+
+bookmark_border
+The getting started guide covered how to create a simple WorkRequest and enqueue it.
+
+In this guide you will learn how to define and customize WorkRequest objects to handle common use cases, such as how to:
+
+    1-  Schedule one-time and recurring work
+    2-  Set work constraints like requiring Wi-Fi or charging
+    3-  Guarantee a minimum delay in work execution
+    4-  Set retry and back-off strategies
+    4-  Pass input data to work
+    5-  Group related work together using tags
+
+Overview
+
+Work is defined in WorkManager via a WorkRequest. In order to schedule any work with WorkManager y
+ou must first create a WorkRequest object and then enqueue it.
+
+Kotlin
+Java
+
+val myWorkRequest = ...
+WorkManager.getInstance(myContext).enqueue(myWorkRequest)
+The WorkRequest object contains all of the information needed by WorkManager to schedule and run your
+work. It includes constraints which must be met for your work to run, scheduling information such as
+delays or repeating intervals, retry configuration, and may include input data if your work relies on it.
+
+WorkRequest itself is an abstract base class. There are two derived implementations of this class
+that you can use to create the request, OneTimeWorkRequest and PeriodicWorkRequest. As their names
+imply, OneTimeWorkRequest is useful for scheduling non-repeating work, whilst PeriodicWorkRequest is
+more appropriate for scheduling work that repeats on some interval.
+
+Schedule one-time work
+
+For simple work, which requires no additional configuration, use the static method from:
+
+Kotlin
+Java
+
+val myWorkRequest = OneTimeWorkRequest.from(MyWork::class.java)
+For more complex work, you can use a builder:
+
+Kotlin
+Java
+
+val uploadWorkRequest: WorkRequest =
+   OneTimeWorkRequestBuilder<MyWork>()
+       // Additional configuration
+       .build()

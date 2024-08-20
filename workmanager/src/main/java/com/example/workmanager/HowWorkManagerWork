@@ -1,0 +1,130 @@
+Define the work
+
+Work is defined using the Worker class. The doWork() method runs asynchronously on a background thread provided by WorkManager.
+
+To create some work for WorkManager to run, extend the Worker class and override the doWork() method. For example, to create a Worker that uploads images, you can do the following:
+
+Kotlin
+Java
+
+class UploadWorker(appContext: Context, workerParams: WorkerParameters):
+       Worker(appContext, workerParams) {
+   override fun doWork(): Result {
+
+       // Do the work here--in this case, upload the images.
+       uploadImages()
+
+       // Indicate whether the work finished successfully with the Result
+       return Result.success()
+   }
+}
+The Result returned from doWork() informs the WorkManager service whether the work succeeded and, in the case of failure, whether or not the work should be retried.
+
+Result.success(): The work finished successfully.
+Result.failure(): The work failed.
+Result.retry(): The work failed and should be tried at another time according to its retry policy.
+
+Create a WorkRequest
+
+Once your work is defined, it must be scheduled with the WorkManager service in order to run. WorkManager
+offers a lot of flexibility in how you schedule your work. You can schedule it to run periodically over
+an interval of time, or you can schedule it to run only one time.
+
+However you choose to schedule the work, you will always use a WorkRequest. While a Worker defines the
+unit of work, a WorkRequest (and its subclasses) define how and when it should be run. In the simplest
+case, you can use a OneTimeWorkRequest, as shown in the following example.
+
+Submit the WorkRequest to the system
+
+Finally, you need to submit your WorkRequest to WorkManager using the enqueue() method.
+
+Kotlin
+Java
+
+WorkManager
+    .getInstance(myContext)
+    .enqueue(uploadWorkRequest)
+The exact time that the worker is going to be executed depends on the constraints that are used in
+your WorkRequest and on system optimizations. WorkManager is designed to give the best behavior under these restrictions.
+
+
+
+Schedule expedited work
+
+WorkManager 2.7.0 introduced the concept of expedited work. This allows WorkManager to execute important work while giving the system better control over access to resources.
+
+Expedited work is notable for the following characteristics:
+
+Importance: Expedited work suits tasks which are important to the user or are user-initiated.
+    1- Speed: Expedited work best fits short tasks that start immediately and complete within a few minutes.
+    2- Quotas: A system-level quota that limits foreground execution time determines whether an
+        expedited job can start.
+    3- Power Management: Power management restrictions, such as Battery Saver and Doze, are less likely
+        to affect expedited work.
+    4- Latency: The system immediately executes expedited work, provided that the system's current
+       workload enables it to do so. This means they are latency sensitive and can't be scheduled for
+       later execution.
+    5- A potential use case for expedited work might be within a chat app when the user wants to send a
+       message or an attached image. Similarly, an app that handles a payment or subscription flow might
+       also want to use expedited work. This is because those tasks are important to the user, execute
+       quickly in the background, need to begin immediately, and should continue to execute even if
+       the user closes the app
+
+Quotas
+
+The system must allocate execution time to an expedited job before it can run. Execution time is not
+unlimited. Rather, each app receives a quota of execution time. When your app uses its execution time
+and reaches its allocated quota, you can no longer execute expedited work until the quota refreshes.
+This allows Android to more effectively balance resources between applications.
+
+The amount of execution time available to an app is based on the standby bucket and process importance.
+
+You can determine what occurs when the execution quota does not allow for an expedited job to run immediately.
+See the snippets below for detail.
+
+Note: While your app is in the foreground, quotas won’t limit the execution of expedited work. An
+execution time quota applies only when your app is in the background, or when your app moves to the
+background. As such, you should expedite work that you want to continue in the background. You can
+continue to use setForeground() while your app is in the foreground.
+
+
+Executing expedited work
+
+Starting in WorkManager 2.7, your app can call setExpedited() to declare that a WorkRequest should
+run as quickly as possible using an expedited job. The following code snippet provides an example
+of how to use setExpedited():
+
+Kotlin
+Java
+
+val request = OneTimeWorkRequestBuilder<SyncWorker>()
+    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+    .build()
+
+WorkManager.getInstance(context)
+    .enqueue(request)
+
+   Note*  1- java.lang.IllegalArgumentException: Expedited jobs cannot be delayed
+          2- Expedited jobs only support network and storage constraints
+
+
+In this example, we initialize an instance of OneTimeWorkRequest and call setExpedited() on it.
+This request then becomes expedited work. If the quota allows, it will begin to run immediately in
+the background. If the quota has been used, the OutOfQuotaPolicy parameter indicates that the request
+should be run as normal, non-expedited work.
+
+
+Backwards compatibility and foreground services
+
+To maintain backwards compatibility for expedited jobs, WorkManager might run a foreground service on platform versions older than Android 12. Foreground services can display a notification to the user.
+
+The getForegroundInfoAsync() and getForegroundInfo() methods in your Worker enable WorkManager to display a notification when you call setExpedited() prior to Android 12.
+
+Any ListenableWorker must implement the getForegroundInfo method if you would like to request that the task run as an expedited job.
+
+Caution: Failing to implement the corresponding getForegroundInfo method can lead to runtime crashes when calling setExpedited on older platform versions.
+When targeting Android 12 or higher, foreground services remain available to you through the corresponding setForeground method.
+
+Caution: setForeground() can throw runtime exceptions on Android 12, and might throw an exception if the launch was restricted.
+
+Note* to overcome this crash we must override getForgroundinfo() in worker class
