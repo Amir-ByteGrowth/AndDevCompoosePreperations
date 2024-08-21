@@ -1,0 +1,51 @@
+The main difference between any worker and coroutine worker is that the doWork() method in a CoroutineWorker
+is a suspend function and can run asynchronous tasks, while Worker ‘s doWork() can only execute synchronous
+ones. The Coroutine Worker has a ListenableWorker implementation that provides interop with Kotlin Coroutines.
+While using Coroutine Worker, all you have to do is override the doWork() method which is a suspend function .
+override suspend fun doWork(): Result = coroutineScope {
+    Log.d(TAG, "doWork called")
+
+    //Mark worker as important and initialize notification
+    val progress = "Finishing up"
+   //create an instance of foreground which can be used to show notification.
+    setForeground(createForegroundInfo(progress))
+
+    //do any background work like uploading media
+
+}
+Also the coroutine worker automatically handles stoppages and cancellation. CoroutineWorkers handle
+stoppages automatically by cancelling the coroutine and propagating the cancellation signals. You
+don't need to do anything special to handle work stoppages.
+Note that CoroutineWorker.doWork() is a suspending function.Unlike Worker, this code does not run on
+the Executor specified in your Configuration. Instead, it defaults to Dispatchers.Default:
+class UploadWorker(context: Context, params: WorkerParameters) :
+        CoroutineWorker(context, params) {override suspend fun doWork(): Result {return try {
+            // Do something
+            Result.success()
+        } catch (error: Throwable) {
+            Result.failure()
+        }
+    }
+}
+Also if you want to do some kind of network operation , you will have to use threading in coroutine worker.
+class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+
+    override suspend fun doWork(): Result = coroutineScope {
+        val jobs = (0 until 100).map {
+            async {
+                downloadSynchronously("https://www.google.com")
+            }
+        }
+
+        // awaitAll will throw an exception if a download fails, which CoroutineWorker will treat as a failure
+        jobs.awaitAll()
+        Result.success()
+    }
+}
+Recap
+For Kotlin users, WorkManager provides first-class support for coroutines
+Instead of extending Worker, we should extend CoroutineWorker
+CoroutineWorker.doWork() is a suspending function
+The code runs on Dispatchers.Default, not on Executor (customisation by using CoroutineContext)
+Stop work
+CoroutineWorkers handle stoppages automatically by cancelling the coroutine and propagating the cancellation signals
