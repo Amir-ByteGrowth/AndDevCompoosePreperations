@@ -73,7 +73,7 @@ class MyWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
 
-    private fun createNotification(channelId: String, data: String): Notification {
+     fun createNotification(channelId: String, data: String): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelName = "Expedited Work"
             val importance = NotificationManager.IMPORTANCE_LOW
