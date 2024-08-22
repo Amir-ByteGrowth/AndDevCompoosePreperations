@@ -1,6 +1,7 @@
 package com.example.workmanager
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,6 +17,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
 import androidx.work.workDataOf
@@ -23,6 +25,7 @@ import com.example.workmanager.ui.theme.CompoosePreperationsTheme
 import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.RetryAndBackoffPolicyWorker
 import com.example.workmanager.workers.SimpleWorker
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class MainActivity2 : ComponentActivity() {
@@ -49,8 +52,10 @@ class MainActivity2 : ComponentActivity() {
 //        periodicWorkRequest()
 //        retryAndBackOfPolicyWorker()
 //        addTagWorker()
-        enqueUniqueWorker()
+//        enqueUniqueWorker()
+        getInfoAboutWorker()
     }
+
 
     //    this request will for all from 26 to 34
     private fun simpleRequest() {
@@ -61,7 +66,7 @@ class MainActivity2 : ComponentActivity() {
     }
 
     // now it is working on from 26 to 34 . if you want to show notification below 12 you must set is setexpedited and implement getforgoundinfo method els it will crash
-    private fun coroutineWorker(){
+    private fun coroutineWorker() {
         val simpleRequest =
             OneTimeWorkRequestBuilder<MyCoroutineWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
@@ -76,24 +81,27 @@ class MainActivity2 : ComponentActivity() {
         WorkManager.getInstance(applicationContext).enqueue(periodicWorkRequest)
     }
 
-    private fun retryAndBackOfPolicyWorker(){
+    private fun retryAndBackOfPolicyWorker() {
         val request =
             OneTimeWorkRequestBuilder<RetryAndBackoffPolicyWorker>().setInputData(
                 workDataOf("input" to "RetryAndBackofPolicy")
             ).setBackoffCriteria(
                 BackoffPolicy.LINEAR,
                 MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS).build()
+                TimeUnit.MILLISECONDS
+            ).build()
         WorkManager.getInstance(applicationContext).enqueue(request)
     }
-    private fun addTagWorker(){
+
+    private fun addTagWorker() {
         val request =
             OneTimeWorkRequestBuilder<RetryAndBackoffPolicyWorker>().setInputData(
                 workDataOf("input" to "RetryAndBackofPolicy")
             ).setBackoffCriteria(
                 BackoffPolicy.LINEAR,
                 MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS).addTag("one").build()
+                TimeUnit.MILLISECONDS
+            ).addTag("one").build()
         WorkManager.getInstance(applicationContext).enqueue(request)
 
 //        lifecycleScope.launch {
@@ -118,13 +126,33 @@ class MainActivity2 : ComponentActivity() {
         WorkManager.getInstance(applicationContext)
             .enqueueUniqueWork("retryWork", ExistingWorkPolicy.KEEP, request)
 
+    }
+
+    private fun getInfoAboutWorker() {
+        val request =
+            OneTimeWorkRequestBuilder<RetryAndBackoffPolicyWorker>().setInputData(
+                workDataOf("input" to "RetryAndBackofPolicy")
+            ).setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            ).build()
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniqueWork("retryWork", ExistingWorkPolicy.KEEP, request)
+
+        WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(request.id)
+            .observeForever { workInfo ->
+                println("Work enqued Successfully  "+ workInfo?.state)
+//                if (workInfo?.state == WorkInfo.State.ENQUEUED) {
+//
+//                }
+
+            }
+
 
     }
 
-
 }
-
-
 @Composable
 fun Greeting2(name: String, modifier: Modifier = Modifier) {
     Text(

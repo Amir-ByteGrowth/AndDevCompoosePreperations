@@ -72,3 +72,67 @@ Unique work sequences can also be useful if you need to gradually build up a lon
  status. If the existing work is CANCELLED or FAILED, the new work still runs.
  For period work, you provide an ExistingPeriodicWorkPolicy, which supports 2 options, REPLACE and KEEP.
  These options function the same as their ExistingWorkPolicy counterparts.
+
+
+ Complex work queries
+
+ WorkManager 2.4.0 and higher supports complex querying for enqueued jobs using WorkQuery objects. WorkQuery supports querying for work by a combination of it’s tag(s), state and unique work name.
+
+ The following example shows how you can find all work with the tag, “syncTag”, that is in the FAILED or CANCELLED state and has a unique work name of either “preProcess” or “sync”.
+
+ Kotlin
+ Java
+
+ val workQuery = WorkQuery.Builder
+        .fromTags(listOf("syncTag"))
+        .addStates(listOf(WorkInfo.State.FAILED, WorkInfo.State.CANCELLED))
+        .addUniqueWorkNames(listOf("preProcess", "sync")
+     )
+    .build()
+
+ val workInfos: ListenableFutureL<istW<orkInfo >>= workManager.getWorkInfos(workQuery)
+ Each component (tag, state, or name) in a WorkQuery is AND-ed with the others. Each value in a component is OR-ed. For example: (name1 OR name2 OR ...) AND (tag1 OR tag2 OR ...) AND (state1 OR state2 OR ...).
+
+ WorkQuery also works with the LiveData equivalent, getWorkInfosLiveData().
+
+ Cancelling and stopping work
+
+ If you no longer need your previously enqueued work to run, you can ask for it to be cancelled. Work can be cancelled by its name, id or by a tag associated with it.
+
+ Kotlin
+ Java
+
+ // by id
+ workManager.cancelWorkById(syncWorker.id)
+
+ // by name
+ workManager.cancelUniqueWork("sync")
+
+ // by tag
+ workManager.cancelAllWorkByTag("syncTag")
+ Under the hood, WorkManager checks the State of the work. If the work is already finished, nothing happens. Otherwise, the work's state is changed to CANCELLED and the work will not run in the future. Any WorkRequest jobs that are dependent on this work will also be CANCELLED.
+
+ Currently RUNNING work receives a call to ListenableWorker.onStopped(). Override this method to handle any potential cleanup. See stop a running worker for more information.
+
+ Note: cancelAllWorkByTag(String) cancels all work with the given tag.
+ Stop a running Worker
+
+ There are a few different reasons your running Worker might be stopped by WorkManager:
+
+ You explicitly asked for it to be cancelled (by calling WorkManager.cancelWorkById(UUID), for example).
+ In the case of unique work, you explicitly enqueued a new WorkRequest with an ExistingWorkPolicy of REPLACE. The old WorkRequest is immediately considered cancelled.
+ Your work's constraints are no longer met.
+ The system instructed your app to stop your work for some reason. This can happen if you exceed the execution deadline of 10 minutes. The work is scheduled for retry at a later time.
+ Under these conditions, your Worker is stopped.
+
+ You should cooperatively abort any work you had in progress and release any resources your Worker is holding onto. For example, you should close open handles to databases and files at this point. There are two mechanisms at your disposal to understand when your Worker is stopping.
+
+ onStopped() callback
+
+ WorkManager invokes ListenableWorker.onStopped() as soon as your Worker has been stopped. Override this method to close any resources you may be holding onto.
+
+ isStopped() property
+
+ You can call the ListenableWorker.isStopped() method to check if your worker has already been stopped. If you're performing long-running or repetitive operations in your Worker, you should check this property frequently and use it as a signal for stopping work as soon as possible.
+
+ Note: WorkManager ignores the Result set by a Worker that has received the onStop signal, because the Worker is already considered stopped.
