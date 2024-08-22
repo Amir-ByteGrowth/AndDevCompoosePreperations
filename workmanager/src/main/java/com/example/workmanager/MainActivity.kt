@@ -19,6 +19,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.example.workmanager.ui.theme.CompoosePreperationsTheme
+import com.example.workmanager.workers.DownloadWorker
 import com.example.workmanager.workers.ExpeditedWorkerWithNotificationToSupportOnBelow12
 import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.MyWorker
@@ -44,7 +45,8 @@ class MainActivity : ComponentActivity() {
 
 //        forgroundInfoAsycnhImple()
 //        coroutineWorker()
-        progressWorker()
+//        progressWorker()
+        downLoadWorker()
         setContent {
             CompoosePreperationsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -96,6 +98,14 @@ class MainActivity : ComponentActivity() {
 
     fun progressWorker(){
         val uploadWorkRequest: OneTimeWorkRequest = OneTimeWorkRequestBuilder<ProgressWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST).build()
+
+        WorkManager.getInstance(applicationContext).enqueue(
+            uploadWorkRequest
+        )
+    }
+
+    fun downLoadWorker(){
+        val uploadWorkRequest: OneTimeWorkRequest = OneTimeWorkRequestBuilder<DownloadWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST).build()
 
         WorkManager.getInstance(applicationContext).enqueue(
             uploadWorkRequest
