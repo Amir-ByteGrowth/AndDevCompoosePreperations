@@ -24,12 +24,14 @@ import com.example.workmanager.ui.theme.CompoosePreperationsTheme
 import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.RetryAndBackoffPolicyWorker
 import com.example.workmanager.workers.SimpleWorker
+import com.example.workmanager.workers.chainingworkers.FinalWorker
+import com.example.workmanager.workers.chainingworkers.OutputWorker1
+import com.example.workmanager.workers.chainingworkers.OutputWorker2
+import com.example.workmanager.workers.chainingworkers.OutputWorker3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
@@ -60,7 +62,8 @@ class MainActivity2 : ComponentActivity() {
 //        enqueUniqueWorker()
 //        getInfoAboutWorker()
 //        simpleRequestCancel()
-        simpleRequestCancelWithCoroutineWorker()
+//        simpleRequestCancelWithCoroutineWorker()
+        workerChaining()
     }
 
 
@@ -202,6 +205,41 @@ class MainActivity2 : ComponentActivity() {
 
 
     }
+
+    //worker  chaining parallel and then
+    private fun workerChaining() {
+        val parallelWorkRequest1 = OneTimeWorkRequestBuilder<OutputWorker1>()
+            .addTag("parallel_work_tag")
+            .build()
+
+        val parallelWorkRequest2 = OneTimeWorkRequestBuilder<OutputWorker2>()
+            .addTag("parallel_work_tag")
+            .build()
+
+        val parallelWorkRequest3 = OneTimeWorkRequestBuilder<OutputWorker3>()
+            .addTag("parallel_work_tag")
+            .build()
+        val finalWorkRequest = OneTimeWorkRequestBuilder<FinalWorker>()
+            .addTag("parallel_work_tag")
+            .build()
+
+// Execute parallelWorkRequest1 and parallelWorkRequest2 in parallel
+// and then execute finalWorkRequest
+        WorkManager.getInstance(applicationContext)
+            .beginWith(listOf(parallelWorkRequest1, parallelWorkRequest2, parallelWorkRequest2,parallelWorkRequest3))
+            .then(finalWorkRequest)
+            .enqueue()
+
+        WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(finalWorkRequest.id)
+            .observeForever {
+                if (it.state == WorkInfo.State.SUCCEEDED) {
+                    val output = it.outputData
+                    println("Final Worker output   \n" + (output.getString("output") ?: " Empty or null data"))
+                }
+            }
+
+    }
+
 
 }
 @Composable
