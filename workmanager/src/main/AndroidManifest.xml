@@ -36,6 +36,10 @@
             android:name="com.example.workmanager.workers.SimpleWorker"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+        <service
+            android:name="com.example.workmanager.workers.MyCoroutineWorker"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>

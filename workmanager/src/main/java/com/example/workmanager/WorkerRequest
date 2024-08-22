@@ -132,3 +132,23 @@ notification on some versions of Android when a WorkRequest has been expedited.
 
 To enable this, WorkManager provides the getForegroundInfoAsync() method, which you must implement
 so WorkManager can display a notification to start a ForegroundService for you where necessary.
+
+Quota policies
+
+You can control what happens to expedited work when your app reaches its execution quota. To continue,
+you can pass setExpedited():
+
+OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST, which causes the job to run as an ordinary work request.
+The snippet above demonstrates this.
+OutOfQuotaPolicy.DROP_WORK_REQUEST, which causes the request to cancel if there is not sufficient quota.
+
+Deferred expedited work
+
+The system tries to execute a given expedited job as soon as possible after the job is invoked.
+However, as is the case with other types of jobs, the system might defer the start of new expedited work, such as in the following cases:
+
+Load: The system load is too high, which can occur when too many jobs are already running, or when
+the system doesn't have enough memory.
+Quota: The expedited job quota limit has been exceeded. Expedited work uses a quota system that's
+based on the App Standby Buckets and limits the maximum execution time within a rolling time window.
+The quotas used for expedited work are more restrictive than the ones used for other types of background jobs.

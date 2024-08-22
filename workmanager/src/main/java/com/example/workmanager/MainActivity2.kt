@@ -15,6 +15,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.example.workmanager.ui.theme.CompoosePreperationsTheme
+import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.SimpleWorker
 
 class MainActivity2 : ComponentActivity() {
@@ -36,13 +37,22 @@ class MainActivity2 : ComponentActivity() {
 
 
     private fun requestsCollection() {
-        simpleRequest()
+//        simpleRequest()
+        coroutineWorker()
     }
 
     //    this request will for all from 26 to 34
     private fun simpleRequest() {
         val simpleRequest =
             OneTimeWorkRequestBuilder<SimpleWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .build()
+        WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
+    }
+
+    // now it is working on from 26 to 34 . if you want to show notification below 12 you must set is setexpedited and implement getforgoundinfo method els it will crash
+    private fun coroutineWorker(){
+        val simpleRequest =
+            OneTimeWorkRequestBuilder<MyCoroutineWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
         WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
     }
