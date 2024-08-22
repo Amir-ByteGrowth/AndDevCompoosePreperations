@@ -13,10 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.example.workmanager.ui.theme.CompoosePreperationsTheme
 import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.SimpleWorker
+import java.util.concurrent.TimeUnit
 
 class MainActivity2 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +41,8 @@ class MainActivity2 : ComponentActivity() {
 
     private fun requestsCollection() {
 //        simpleRequest()
-        coroutineWorker()
+//        coroutineWorker()
+        periodicWorkRequest()
     }
 
     //    this request will for all from 26 to 34
@@ -55,6 +59,14 @@ class MainActivity2 : ComponentActivity() {
             OneTimeWorkRequestBuilder<MyCoroutineWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
         WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
+    }
+
+    private fun periodicWorkRequest() {
+        val periodicWorkRequest =
+            PeriodicWorkRequestBuilder<SimpleWorker>(16, TimeUnit.MINUTES).setInputData(
+                workDataOf("input" to "periodicWith16Minutes")
+            ).build()
+        WorkManager.getInstance(applicationContext).enqueue(periodicWorkRequest)
     }
 
 }

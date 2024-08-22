@@ -145,10 +145,116 @@ OutOfQuotaPolicy.DROP_WORK_REQUEST, which causes the request to cancel if there 
 Deferred expedited work
 
 The system tries to execute a given expedited job as soon as possible after the job is invoked.
-However, as is the case with other types of jobs, the system might defer the start of new expedited work, such as in the following cases:
+However, as is the case with other types of jobs, the system might defer the start of new expedited work,
+such as in the following cases:
 
 Load: The system load is too high, which can occur when too many jobs are already running, or when
 the system doesn't have enough memory.
 Quota: The expedited job quota limit has been exceeded. Expedited work uses a quota system that's
 based on the App Standby Buckets and limits the maximum execution time within a rolling time window.
 The quotas used for expedited work are more restrictive than the ones used for other types of background jobs.
+
+Schedule periodic work
+
+Your app may at times require that certain work runs periodically. For example, you may want to periodically
+backup your data, download fresh content in your app, or upload logs to a server.
+
+Here is how you use the PeriodicWorkRequest to create a WorkRequest object which executes periodically:
+
+Kotlin
+Java
+
+val saveRequest =
+       PeriodicWorkRequestBuilderS<aveImageToFileWorker(>1, TimeUnit.HOURS)
+    // Additional configuration
+           .build()
+In this example, the work is scheduled with a one hour interval.
+
+The interval period is defined as the minimum time between repetitions. The exact time that the worker
+is going to be executed depends on the constraints that you are using in your WorkRequest object and
+on the optimizations performed by the system.
+
+
+Flexible run intervals
+
+If the nature of your work makes it sensitive to run timing, you can configure your PeriodicWorkRequest to run within a flex period inside each interval period, as shown in Figure 1.
+
+You can set a flex interval for a periodic job. You define a repeat interval,
+and a flex interval that specifies a certain amount of time at the end of the
+repeat interval. WorkManager attempts to run your job at some point during the
+flex interval in each cycle.
+
+Figure 1. Diagram shows repeating intervals with the flexible period in which the work can run.
+
+To define periodic work with a flex period, you pass a flexInterval along with the repeatInterval
+when creating the PeriodicWorkRequest. The flex period begins at repeatInterval - flexInterval, and
+goes to the end of the interval.
+
+The following is an example of periodic work that can run during the last 15 minutes of every one hour period.
+
+Kotlin
+Java
+
+val myUploadWork = PeriodicWorkRequestBuilderS<aveImageToFileWorker(>
+       1, TimeUnit.HOURS, // repeatInterval (the period cycle)
+       15, TimeUnit.MINUTES) // flexInterval
+    .build()
+The repeat interval must be greater than or equal to PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS
+and the flex interval must be greater than or equal to PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS.
+
+Work constraints
+
+Constraints ensure that work is deferred until optimal conditions are met. The following constraints
+are available to WorkManager.
+
+NetworkType	Constrains the type of network required for your work to run. For example, Wi-Fi (UNMETERED).
+BatteryNotLow	When set to true, your work will not run if the device is in low battery mode.
+RequiresCharging	When set to true, your work will only run when the device is charging.
+DeviceIdle	When set to true, this requires the user’s device to be idle before the work will run. This
+can be useful for running batched operations that might otherwise have a negative performance impact on
+other apps running actively on the user’s device.
+StorageNotLow	When set to true, your work will not run if the user’s storage space on the device is too low.
+To create a set of constraints and associate it with some work, create a Constraints instance using the
+Contraints.Builder() and assign it to your WorkRequest.Builder().
+
+For example, the following code builds a work request which only runs when the user’s device is both charging and on Wi-Fi:
+
+Kotlin
+Java
+
+val constraints = Constraints.Builder()
+   .setRequiredNetworkType(NetworkType.UNMETERED)
+   .setRequiresCharging(true)
+   .build()
+
+val myWorkRequest: WorkRequest =
+   OneTimeWorkRequestBuilderM<yWork(>)
+       .setConstraints(constraints)
+       .build()
+When multiple constraints are specified, your work will run only when all the constraints are met.
+
+In the event that a constraint becomes unmet while your work is running, WorkManager will stop your worker.
+The work will then be retried when all the constraints are met.
+
+
+Delayed Work
+
+In the event that your work has no constraints or that all the constraints are met when your work is
+enqueued, the system may choose to run the work immediately. If you do not want the work to be run
+immediately, you can specify your work to start after a minimum initial delay.
+
+Here is an example of how to set your work to run at least 10 minutes after it has been enqueued.
+
+Kotlin
+Java
+
+val myWorkRequest = OneTimeWorkRequestBuilderM<yWork(>)
+   .setInitialDelay(10, TimeUnit.MINUTES)
+   .build()
+While the example illustrates how to set an initial delay for a OneTimeWorkRequest, you can also set
+an initial delay for a PeriodicWorkRequest. In that case, only the first run of your periodic work would be delayed.
+
+Note: The exact time that the worker is going to be executed also depends on the constraints that are
+used in your work request and on system optimizations. WorkManager is designed to give the best possible
+behavior under these restrictions.
+

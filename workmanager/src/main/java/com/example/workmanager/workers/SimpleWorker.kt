@@ -4,7 +4,6 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.ServiceInfo
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -15,13 +14,12 @@ import androidx.work.WorkerParameters
 class SimpleWorker(appContext: Context, workerParameters: WorkerParameters) :
     Worker(appContext, workerParameters) {
     override fun doWork(): Result {
-//        val notificationId = 1
-//        val channelId = "expedited_work_channel"
-//        val notification = createNotification(channelId)
-//        setForegroundAsync( ForegroundInfo(notificationId, notification,
-//            FOREGROUND_SERVICE_TYPE_DATA_SYNC))
+
 
         try {
+
+            val inputData = inputData.getString("input") ?: "empty"
+            println("Input Data $inputData")
 
             for (i in 0..10){
                 println("Task# $i m" )
