@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
@@ -23,6 +24,8 @@ import com.example.workmanager.ui.theme.CompoosePreperationsTheme
 import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.RetryAndBackoffPolicyWorker
 import com.example.workmanager.workers.SimpleWorker
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class MainActivity2 : ComponentActivity() {
@@ -47,7 +50,8 @@ class MainActivity2 : ComponentActivity() {
 //        simpleRequest()
 //        coroutineWorker()
 //        periodicWorkRequest()
-        retryAndBackOfPolicyWorker()
+//        retryAndBackOfPolicyWorker()
+        addTagWorker()
     }
 
     //    this request will for all from 26 to 34
@@ -83,6 +87,24 @@ class MainActivity2 : ComponentActivity() {
                 MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS).build()
         WorkManager.getInstance(applicationContext).enqueue(request)
+    }
+    private fun addTagWorker(){
+        val request =
+            OneTimeWorkRequestBuilder<RetryAndBackoffPolicyWorker>().setInputData(
+                workDataOf("input" to "RetryAndBackofPolicy")
+            ).setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS).addTag("one").build()
+        WorkManager.getInstance(applicationContext).enqueue(request)
+
+//        lifecycleScope.launch {
+//            delay(5000)
+//            println("Canceling Work")
+//
+//        }
+
+//        WorkManager.getInstance(applicationContext).cancelAllWorkByTag("one")
     }
 
 }
