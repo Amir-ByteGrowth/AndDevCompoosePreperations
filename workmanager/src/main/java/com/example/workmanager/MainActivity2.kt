@@ -11,13 +11,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.work.BackoffPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
 import androidx.work.workDataOf
 import com.example.workmanager.ui.theme.CompoosePreperationsTheme
 import com.example.workmanager.workers.MyCoroutineWorker
+import com.example.workmanager.workers.RetryAndBackoffPolicyWorker
 import com.example.workmanager.workers.SimpleWorker
 import java.util.concurrent.TimeUnit
 
@@ -42,7 +46,8 @@ class MainActivity2 : ComponentActivity() {
     private fun requestsCollection() {
 //        simpleRequest()
 //        coroutineWorker()
-        periodicWorkRequest()
+//        periodicWorkRequest()
+        retryAndBackOfPolicyWorker()
     }
 
     //    this request will for all from 26 to 34
@@ -67,6 +72,17 @@ class MainActivity2 : ComponentActivity() {
                 workDataOf("input" to "periodicWith16Minutes")
             ).build()
         WorkManager.getInstance(applicationContext).enqueue(periodicWorkRequest)
+    }
+
+    private fun retryAndBackOfPolicyWorker(){
+        val request =
+            OneTimeWorkRequestBuilder<RetryAndBackoffPolicyWorker>().setInputData(
+                workDataOf("input" to "RetryAndBackofPolicy")
+            ).setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS).build()
+        WorkManager.getInstance(applicationContext).enqueue(request)
     }
 
 }

@@ -258,3 +258,96 @@ Note: The exact time that the worker is going to be executed also depends on the
 used in your work request and on system optimizations. WorkManager is designed to give the best possible
 behavior under these restrictions.
 
+Retry and backoff policy
+
+If you require that WorkManager retry your work, you can return Result.retry() from your worker. Your
+work is then rescheduled according to a backoff delay and backoff policy.
+
+Backoff delay specifies the minimum amount of time to wait before retrying your work after the first
+attempt. This value can be no less than 10 seconds (or MIN_BACKOFF_MILLIS).
+Backoff policy defines how the backoff delay should increase over time for subsequent retry attempts.
+WorkManager supports 2 backoff policies, LINEAR and EXPONENTIAL.
+Every work request has a backoff policy and backoff delay. The default policy is EXPONENTIAL with a
+delay of 30 seconds, but you can override this in your work request configuration.
+
+Here is an example of customizing the backoff delay and policy.
+
+Kotlin
+Java
+
+val myWorkRequest = OneTimeWorkRequestBuilderM<yWork(>)
+   .setBackoffCriteria(
+       BackoffPolicy.LINEAR,
+       OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+       TimeUnit.MILLISECONDS)
+   .build()
+In this example, the minimum backoff delay is set to the minimum allowed value, 10 seconds. Since the
+policy is LINEAR the retry interval will increase by approximately 10 seconds with each new attempt.
+For instance, the first run finishing with Result.retry() will be attempted again after 10 seconds,
+followed by 20, 30, 40, and so on, if the work continues to return Result.retry() after subsequent attempts.
+If the backoff policy were set to EXPONENTIAL, the retry duration sequence would be closer to 20, 40, 80, and so on.
+
+Note: Backoff delays are inexact and could vary by several seconds between retries but will never be
+less than the initial backoff delay specified in your configuration.
+
+
+Tag work
+
+Every work request has a unique identifier, which can be used to identify that work later in order to
+cancel the work or observe its progress.
+
+If you have a group of logically related work, you may also find it helpful to tag those work items.
+Tagging allows you to operate with a group of work requests together.
+
+For example, WorkManager.cancelAllWorkByTag(String) cancels all work requests with a particular tag,
+and WorkManager.getWorkInfosByTag(String) returns a list of the WorkInfo objects which can be used to
+determine the current work state.
+
+The following code shows how you can add a "cleanup" tag to your work:
+
+Kotlin
+Java
+
+val myWorkRequest = OneTimeWorkRequestBuilderM<yWork(>)
+   .addTag("cleanup")
+   .build()
+Finally, multiple tags can be added to a single work request. Internally these tags are stored as a
+set of strings. To get the set of tags associated with the WorkRequest you can use WorkInfo.getTags().
+
+From your Worker class, you can retrieve its set of tags via ListenableWorker.getTags().
+
+Assign input data
+
+Your work may require input data in order to do its work. For example, work that handles uploading an
+image might require the URI of the image to be uploaded as input.
+
+Input values are stored as key-value pairs in a Data object and can be set on the work request. WorkManager
+will deliver the input Data to your work when it executes the work. The Worker class can access the input
+arguments by calling Worker.getInputData(). The code below shows how you can create a Worker instance
+which requires input data and how to send it in your work request.
+
+Kotlin
+Java
+
+// Define the Worker requiring input
+class UploadWork(appContext: Context, workerParams: WorkerParameters)
+   : Worker(appContext, workerParams) {
+
+   override fun doWork(): Result {
+       val imageUriInput =
+           inputData.getString("IMAGE_URI") ?: return Result.failure()
+
+       uploadFile(imageUriInput)
+       return Result.success()
+   }
+   ...
+}
+
+// Create a WorkRequest for your Worker and sending it input
+val myUploadWork = OneTimeWorkRequestBuilderU<ploadWork(>)
+   .setInputData(workDataOf(
+       "IMAGE_URI" to "http://..."
+   ))
+   .build()
+Similarly, the Data class can be used to output a return value. Input and output data are covered in
+more detail in the section input parameters and returned values.
