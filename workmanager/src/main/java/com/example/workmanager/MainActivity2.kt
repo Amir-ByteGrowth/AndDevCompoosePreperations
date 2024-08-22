@@ -1,7 +1,6 @@
 package com.example.workmanager
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,7 +24,13 @@ import com.example.workmanager.ui.theme.CompoosePreperationsTheme
 import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.RetryAndBackoffPolicyWorker
 import com.example.workmanager.workers.SimpleWorker
-import java.util.UUID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
 class MainActivity2 : ComponentActivity() {
@@ -53,8 +58,11 @@ class MainActivity2 : ComponentActivity() {
 //        retryAndBackOfPolicyWorker()
 //        addTagWorker()
 //        enqueUniqueWorker()
-        getInfoAboutWorker()
+//        getInfoAboutWorker()
+//        simpleRequestCancel()
+        simpleRequestCancelWithCoroutineWorker()
     }
+
 
 
     //    this request will for all from 26 to 34
@@ -63,6 +71,49 @@ class MainActivity2 : ComponentActivity() {
             OneTimeWorkRequestBuilder<SimpleWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
         WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
+    }
+
+    // on stop method // if we are doing long running task in dowork method they will continue running until we stop it mannualy
+    private fun simpleRequestCancel() {
+        val simpleRequest =
+            OneTimeWorkRequestBuilder<SimpleWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .build()
+        WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
+
+        WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(simpleRequest.id)
+            .observeForever {
+                if (it.state == WorkInfo.State.RUNNING) {
+                    WorkManager.getInstance(applicationContext).cancelWorkById(simpleRequest.id)
+                }
+            }
+
+    }
+
+    //onstop with coroutine worker it will cancel all tasks automatically
+    private fun simpleRequestCancelWithCoroutineWorker() {
+        val simpleRequest =
+            OneTimeWorkRequestBuilder<MyCoroutineWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .build()
+        WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
+
+        WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(simpleRequest.id)
+            .observeForever {
+                if (it.state == WorkInfo.State.RUNNING) {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        try {
+                            delay(10000)
+
+                            WorkManager.getInstance(applicationContext).cancelWorkById(simpleRequest.id)
+                        }catch (e:CancellationException){
+                            println("Exception Caught")
+                        }
+
+
+                    }
+
+                }
+            }
+
     }
 
     // now it is working on from 26 to 34 . if you want to show notification below 12 you must set is setexpedited and implement getforgoundinfo method els it will crash

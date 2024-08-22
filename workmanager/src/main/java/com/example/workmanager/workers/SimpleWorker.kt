@@ -56,6 +56,14 @@ class SimpleWorker(appContext: Context, workerParameters: WorkerParameters) :
             .setSmallIcon(android.R.drawable.ic_notification_overlay)
             .build()
     }
+
+
+
+    override fun onStopped() {
+        println("Worker was stopped")
+        super.onStopped()
+    }
+
 }
 
 
