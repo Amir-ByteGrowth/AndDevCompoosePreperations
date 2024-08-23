@@ -21,6 +21,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
 import androidx.work.workDataOf
 import com.example.workmanager.ui.theme.CompoosePreperationsTheme
+import com.example.workmanager.workers.LongRunningDownloadWorkManager
 import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.RetryAndBackoffPolicyWorker
 import com.example.workmanager.workers.SimpleWorker
@@ -71,7 +72,8 @@ class MainActivity2 : ComponentActivity() {
 //        simpleRequestCancelWithCoroutineWorker()
 //        workerChaining()
 //        workerChainingWithCustomMerger()
-        failureWorkerChainingWithCustomMerger()
+//        failureWorkerChainingWithCustomMerger()
+        longRunningDownloadCoroutineWorker()
     }
 
 
@@ -303,6 +305,13 @@ class MainActivity2 : ComponentActivity() {
             .enqueue()
     }
 
+    // long running download worker al hum du lilah working on all devices from 26 to 34
+    private fun longRunningDownloadCoroutineWorker() {
+        val simpleRequest =
+            OneTimeWorkRequestBuilder<LongRunningDownloadWorkManager>()
+                .build()
+        WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
+    }
 
 
 }
