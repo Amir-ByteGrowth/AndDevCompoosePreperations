@@ -28,6 +28,12 @@ import com.example.workmanager.workers.chainingworkers.FinalWorker
 import com.example.workmanager.workers.chainingworkers.OutputWorker1
 import com.example.workmanager.workers.chainingworkers.OutputWorker2
 import com.example.workmanager.workers.chainingworkers.OutputWorker3
+import com.example.workmanager.workers.chainingworkers.custominputmerger.CustomInputMerger
+import com.example.workmanager.workers.chainingworkers.custominputmerger.FailureWork1
+import com.example.workmanager.workers.chainingworkers.custominputmerger.FailureWork2
+import com.example.workmanager.workers.chainingworkers.custominputmerger.FinalWorkerCustomManager
+import com.example.workmanager.workers.chainingworkers.custominputmerger.Work1
+import com.example.workmanager.workers.chainingworkers.custominputmerger.Work2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -63,7 +69,9 @@ class MainActivity2 : ComponentActivity() {
 //        getInfoAboutWorker()
 //        simpleRequestCancel()
 //        simpleRequestCancelWithCoroutineWorker()
-        workerChaining()
+//        workerChaining()
+//        workerChainingWithCustomMerger()
+        failureWorkerChainingWithCustomMerger()
     }
 
 
@@ -223,6 +231,15 @@ class MainActivity2 : ComponentActivity() {
             .addTag("parallel_work_tag")
             .build()
 
+        // if all parallel worker are passing data with same key will will use ArrayCreatingMerger so
+        // we can get array of values with same key else system will overwrite all values to last
+        // executing parent value
+
+//        val finalWorkRequest = OneTimeWorkRequestBuilder<FinalWorker>().setInputMerger(
+//            ArrayCreatingInputMerger::class.java)
+//            .addTag("parallel_work_tag")
+//            .build()
+
 // Execute parallelWorkRequest1 and parallelWorkRequest2 in parallel
 // and then execute finalWorkRequest
         WorkManager.getInstance(applicationContext)
@@ -239,6 +256,53 @@ class MainActivity2 : ComponentActivity() {
             }
 
     }
+
+    //worker chaining with custom merger
+    private fun workerChainingWithCustomMerger() {
+        // Create the work requests for Work1 and Work2
+        val work1 = OneTimeWorkRequestBuilder<Work1>()
+            .setInputData(workDataOf("key1" to "value1_from_work1", "key2" to "value2_from_work1"))
+            .build()
+
+        val work2 = OneTimeWorkRequestBuilder<Work2>()
+            .setInputData(workDataOf("key1" to "value1_from_work2", "key3" to "value3_from_work2"))
+            .build()
+
+// Create the final work request using the CustomInputMerger
+        val finalWork = OneTimeWorkRequestBuilder<FinalWorkerCustomManager>()
+            .setInputMerger(CustomInputMerger::class.java)
+            .build()
+
+// Enqueue Work1 and Work2 to run in parallel, followed by finalWork
+        WorkManager.getInstance(applicationContext)
+            .beginWith(listOf(work1, work2))
+            .then(finalWork)
+            .enqueue()
+    }
+
+    //    failure in chain testin
+    private fun failureWorkerChainingWithCustomMerger() {
+        // Create the work requests for Work1 and Work2
+        val work1 = OneTimeWorkRequestBuilder<FailureWork1>()
+            .setInputData(workDataOf("key1" to "value1_from_work1", "key2" to "value2_from_work1"))
+            .build()
+// when this work fail all its dependent will fail
+        val work2 = OneTimeWorkRequestBuilder<FailureWork2>()
+            .setInputData(workDataOf("key1" to "value1_from_work2", "key3" to "value3_from_work2"))
+            .build()
+
+// Create the final work request using the CustomInputMerger
+        val finalWork = OneTimeWorkRequestBuilder<FinalWorkerCustomManager>()
+            .setInputMerger(CustomInputMerger::class.java)
+            .build()
+
+// Enqueue Work1 and Work2 to run in parallel, followed by finalWork
+        WorkManager.getInstance(applicationContext)
+            .beginWith(listOf(work1, work2))
+            .then(finalWork)
+            .enqueue()
+    }
+
 
 
 }

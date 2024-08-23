@@ -9,6 +9,8 @@ class OutputWorker3(appContext: Context, workerParameters: WorkerParameters) :
     Worker(appContext, workerParameters) {
     override fun doWork(): Result {
         val data = Data.Builder().put("output3", "worker Three").build()
+
+//        val data = Data.Builder().put("output", "worker Three").build()
         return Result.success(data)
     }
 }
