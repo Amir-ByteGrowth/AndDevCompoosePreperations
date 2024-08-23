@@ -53,7 +53,7 @@
             tools:node="merge">
 
         </service>
-
+<!--this is very impotant to add becuase set forgropund will not work without this-->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync"
