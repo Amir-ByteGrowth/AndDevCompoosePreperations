@@ -11,8 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import androidx.work.BackoffPolicy
+import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -74,8 +77,9 @@ class MainActivity2 : ComponentActivity() {
 //        workerChaining()
 //        workerChainingWithCustomMerger()
 //        failureWorkerChainingWithCustomMerger()
-        longRunningDownloadCoroutineWorker()
+//        longRunningDownloadCoroutineWorker()
 //        uploadCoroutineWorker()
+        updateWorkerRequest()
     }
 
 
@@ -321,6 +325,35 @@ class MainActivity2 : ComponentActivity() {
             OneTimeWorkRequestBuilder<UploadWork>()
                 .build()
         WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
+    }
+
+    // updated worker request
+    private fun updateWorkerRequest() {
+        val workManager = WorkManager.getInstance(applicationContext)
+        val constraints =
+            Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+
+
+        val simpleRequest =
+            OneTimeWorkRequestBuilder<UploadWork>().setConstraints(constraints)
+                .build()
+        workManager.enqueue(simpleRequest)
+
+        val updatedConstraints =
+            Constraints.Builder().setRequiredNetworkType(NetworkType.NOT_REQUIRED).build()
+        val updateRequest =
+            OneTimeWorkRequestBuilder<UploadWork>().setConstraints(updatedConstraints)
+                .setId(simpleRequest.id)
+                .build()
+
+        lifecycleScope.launch {
+            delay(3000)
+            workManager.updateWork(updateRequest)
+        }
+
+
+
+
     }
 
 

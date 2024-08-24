@@ -1,0 +1,62 @@
+Update work that is already enqueued
+
+bookmark_border
+WorkManager allows you to update a WorkRequest after you have already enenqueued it. This is often
+necessary in larger apps that frequently change constraints or need to update their workers on the fly.
+As of WorkManager version 2.8.0, the updateWork() API is the means of doing this.
+
+The updateWork() method allows you to change certain aspects of a WorkRequest on the fly, without having
+to go through the process of manually canceling and enqueuing a new one. This greatly simplifies the
+development process.
+
+Avoid canceling work
+
+You should generally avoid canceling an existing WorkRequest and enqueuing a new one. Doing so can
+result in the app repeating certain tasks, and can require you to write a significant amount of additional code.
+
+Consider the following examples of where canceling a WorkRequest can cause difficulties:
+
+Back-end request: If you cancel a Worker while it is computing a payload to send to the server, the
+new Worker needs to start over and recompute the potentially expensive payload.
+Scheduling: If you cancel a PeriodicWorkRequest and you would like the new PeriodicWorkRequest to
+execute on the same schedule, you need to calculate a time offset to ensure that the new execution
+time is aligned with the previous work request.
+The updateWork() API allows you to update a work request's constraints and other parameters without
+the trouble of canceling and enqueuing a new request.
+
+When to cancel work
+
+There are cases where you should directly cancel a WorkRequest rather than call updateWork(). This is
+what you should do when you wish to change the fundamental nature of the work that you have enqueued.
+
+Caution: It is not possible to use updateWork() to change the type of Worker in a WorkRequest. For
+example, if you have enqueued a OneTimeWorkRequest and you would like for it to run periodically, you
+must cancel the request and schedule a new PeriodicWorkRequest.
+
+When to update work
+
+Imagine a photo app that does a daily backup of the user's photos. It has enqueued a PeriodicWorkRequest
+to do so. The WorkRequest has constraints that require the device to be charging and connected to WiFi.
+
+However, the user only charges their device for 20 minutes a day using a fast charger. In this case,
+the app may want to update the WorkRequest to relax the charging constraint, so that it can still upload
+the photos even if the device isn't fully charged.
+
+In this situation, you can use the updateWork() method to update the work request's constraints.
+
+Policies for updating work
+
+Previously, the recommended solution to updating periodic work was to enqueue a PeriodicWorkRequest
+with the policy ExistingPeriodicWorkPolicy.REPLACE. If there was a pending PeriodicWorkRequest with
+the same unique id, the new work request would cancel and delete it. This policy is now deprecated in
+favor of the workflow using the ExistingPeriodicWorkPolicy.UPDATE.
+
+For example, when using enqueueUniquePeriodicWork with a PeriodicWorkRequest, you can initialize the
+new PeriodicWorkRequest with the ExistingPeriodicWorkPolicy.UPDATE policy. If there is a pending
+PeriodicWorkRequest with the same unique name, WorkManager updates it to the new specification.
+Following this workflow, it is not necessary to use updateWork().
+
+Note: A similar update policy doesn't exist for OneTimeWorkRequest. This is because you can use the
+enqueueUniqueWork method with the APPEND or APPEND_OR_REPLACE policies. Doing so creates a chain of
+workers with the same name. As such, WorkManager can't effectively support an UPDATE policy for them,
+as it isn't possible to decide which workers in the chain it should update.
