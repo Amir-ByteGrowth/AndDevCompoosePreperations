@@ -25,6 +25,7 @@ import com.example.workmanager.workers.LongRunningDownloadWorkManager
 import com.example.workmanager.workers.MyCoroutineWorker
 import com.example.workmanager.workers.RetryAndBackoffPolicyWorker
 import com.example.workmanager.workers.SimpleWorker
+import com.example.workmanager.workers.UploadWork
 import com.example.workmanager.workers.chainingworkers.FinalWorker
 import com.example.workmanager.workers.chainingworkers.OutputWorker1
 import com.example.workmanager.workers.chainingworkers.OutputWorker2
@@ -74,6 +75,7 @@ class MainActivity2 : ComponentActivity() {
 //        workerChainingWithCustomMerger()
 //        failureWorkerChainingWithCustomMerger()
         longRunningDownloadCoroutineWorker()
+//        uploadCoroutineWorker()
     }
 
 
@@ -312,6 +314,16 @@ class MainActivity2 : ComponentActivity() {
                 .build()
         WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
     }
+
+    // upload work request
+    private fun uploadCoroutineWorker() {
+        val simpleRequest =
+            OneTimeWorkRequestBuilder<UploadWork>()
+                .build()
+        WorkManager.getInstance(applicationContext).enqueue(simpleRequest)
+    }
+
+
 
 
 }
