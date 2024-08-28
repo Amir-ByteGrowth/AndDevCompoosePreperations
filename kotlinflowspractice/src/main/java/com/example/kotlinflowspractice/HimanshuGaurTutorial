@@ -1,4 +1,4 @@
 FlowsTransformOperators
-1- FlatMap
+1- FlatMap (flatmap latest, flatmap concat, flatmap merge)
 2- Map
 3- Transform
