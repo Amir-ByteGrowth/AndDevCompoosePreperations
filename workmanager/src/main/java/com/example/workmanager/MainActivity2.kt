@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import androidx.work.BackoffPolicy
+import androidx.work.Configuration
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -44,6 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class MainActivity2 : ComponentActivity() {
@@ -354,6 +356,14 @@ class MainActivity2 : ComponentActivity() {
 
 
 
+    }
+
+    //threading in worker
+    private fun threadingInWorkers() {
+        WorkManager.initialize(
+            applicationContext,
+            Configuration.Builder().setExecutor(Executors.newFixedThreadPool(8)).build()
+        )
     }
 
 
