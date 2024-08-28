@@ -1,0 +1,62 @@
+1. Concurrent Execution
+Concurrent execution refers to the ability of a system to handle multiple tasks at the same time.
+However, these tasks don't necessarily run simultaneously. Instead, they are interleaved, meaning the
+CPU switches between tasks rapidly, giving the illusion that they are running at the same time. This can
+occur on a single-core CPU where tasks take turns, or on a multi-core CPU where tasks are assigned to
+different cores but not necessarily running in parallel.
+
+In Kotlin, you achieve concurrency using coroutines. Coroutines allow you to write asynchronous code in
+a sequential manner, making it easier to handle multiple tasks that can run concurrently. Coroutines
+can be used for non-blocking I/O operations, such as network requests or reading from a file, where
+the actual processing time is spent waiting.
+
+kotlin
+Copy code
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    launch {
+        println("Task 1: ${Thread.currentThread().name}")
+        delay(1000)
+        println("Task 1 Completed")
+    }
+    launch {
+        println("Task 2: ${Thread.currentThread().name}")
+        delay(500)
+        println("Task 2 Completed")
+    }
+}
+In the example above, both tasks run concurrently. The first task starts, then the second task starts
+while the first task is delayed.
+
+2. Parallel Execution
+Parallel execution refers to the ability to run multiple tasks simultaneously. This requires a multi-core
+CPU, where each core can execute a different task at the same time. In parallel execution, tasks are
+actually running at the same time, not just giving the appearance of doing so.
+
+In Kotlin, parallelism can be achieved using multiple threads or multiple coroutines running on different
+dispatchers. If you need actual parallel execution, you can use the Dispatchers.Default or Dispatchers.IO,
+which use a thread pool to run tasks in parallel.
+
+kotlin
+Copy code
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    // Using Dispatchers.Default to run on a background thread pool
+    launch(Dispatchers.Default) {
+        println("Task 1: ${Thread.currentThread().name}")
+        delay(1000)
+        println("Task 1 Completed")
+    }
+    launch(Dispatchers.Default) {
+        println("Task 2: ${Thread.currentThread().name}")
+        delay(500)
+        println("Task 2 Completed")
+    }
+}
+In this example, both tasks could potentially run in parallel if there are enough threads available in the thread pool.
+
+Key Differences
+Concurrency is about dealing with many tasks at once but not necessarily at the exact same time. It’s about structure.
+Parallelism is about executing many tasks at the same time. It’s about execution.
