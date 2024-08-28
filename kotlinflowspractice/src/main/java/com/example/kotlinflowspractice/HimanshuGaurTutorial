@@ -2,3 +2,8 @@ FlowsTransformOperators
 1- FlatMap (flatmap latest, flatmap concat, flatmap merge)
 2- Map
 3- Transform
+
+Combining or merging operator
+1- Zip (for the parallel execution, it will wait for emitting for both flows, it will continue combining till last emit of either flow)
+2- Combine (it is used for concurrent execution of flows, it will not wait for emitting if one flow is
+   taking time it will use last emitted value from that flow with new emitted value of either flow, it wil emit all values regardless on un matching number of emits)
