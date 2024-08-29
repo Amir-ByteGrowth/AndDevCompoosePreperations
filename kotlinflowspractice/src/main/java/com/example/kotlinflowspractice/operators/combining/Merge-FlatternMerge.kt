@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.runBlocking
 
 val sourceFlowA = flow {
@@ -32,5 +33,6 @@ fun main() = runBlocking {
 //    flowOfFlows.flattenMerge(1).collectLatest { println(it) }
 
 // it is used only when we have flow of flows
-    flowOfFlows.flattenMerge().collectLatest { println(it) }
+    flowOfFlows.flattenMerge(2).collectLatest { println(it) }
 }
+
