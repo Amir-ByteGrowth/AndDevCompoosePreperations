@@ -3,6 +3,7 @@ package com.example.kotlinflowspractice.hotvscoldflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -14,7 +15,7 @@ fun main() {
         val sharedFlow = MutableSharedFlow<Int>()
 
         // it will show last 3 emitted values
-//        val sharedFlow = MutableSharedFlow<Int>(replay = 2)
+//        val sharedFlow = MutableSharedFlow<Int>(replay = 3)
 
 //        both collector will emit same value
 
@@ -41,9 +42,15 @@ fun main() {
 
 // Emit values to sharedFlow
         launch {
-            repeat(3) { i ->
+            repeat(5) { i ->
                 sharedFlow.emit(i)
             }
+        }
+
+        delay(10000)
+        // hot flow can sore value its the example
+        sharedFlow.collectLatest {
+            println("collected after$it")
         }
     }
 }
