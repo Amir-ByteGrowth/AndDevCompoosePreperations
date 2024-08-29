@@ -1,5 +1,8 @@
 package com.example.coroutinepractice
 
+import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -30,5 +33,28 @@ fun main() {
         // if we write join all here it will show job1,2,4,5,6 then 3 because all coroutines are launched before join all
 //        joinAll(job1, job2, job3, job4)
 
+    }
+
+}
+
+fun coroutineChecking() {
+    // both scope will run cocurrantly jobtag2 only will wait for completion of job2
+    runBlocking {
+        val scope1 = CoroutineScope(Dispatchers.Default)
+        val scope2 = CoroutineScope(Dispatchers.Default)
+        scope1.launch {
+            val job1 = launch { Log.d("JobTag", "job1") }
+            val job2 = launch {
+                delay(500)
+                Log.d("JobTag", "job2exc")
+            }.join()
+            launch { Log.d("JobTag2","Job2") }
+//            joinAll(job1, job2)
+        }
+
+        scope2.launch {
+            launch { Log.d("JobTag", "job3") }
+            launch { Log.d("JobTag", "job4") }
+        }
     }
 }
