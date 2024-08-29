@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.runBlocking
 
 
@@ -20,7 +20,7 @@ fun networkRequest(): Flow<String> = flow {
     emit("Network Request succeeded")
 }
 
-fun main() = runBlocking {
+fun mainTry() = runBlocking {
 //    networkRequest().collectLatest { println(it) }
     // retry will only occur if flow fails with exception
 
@@ -30,4 +30,19 @@ fun main() = runBlocking {
 //    we can also give retry only when specifc condition fulfill
     networkRequest().onEach { it + "OnEach" }.retry{true}
         .catch { println("${it.message}") }.collectLatest { println(it) }
+}
+
+//for exception handleing we use retry and retrywhen
+
+fun main() = runBlocking {
+
+    networkRequest().retryWhen { cause, attempt ->
+        println(cause.message+"   "+"atempt  $attempt")
+        attempt < 3 }.catch { println("${it.message}") }
+        .collectLatest {
+            println()
+        }
+    val count=5
+    // retry internal uses retrywhen with default value retries= Long.Max and predicate {true}
+    networkRequest().retry().collect{}
 }
