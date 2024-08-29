@@ -27,6 +27,12 @@ val userIdFlow = flow {
 // there are three types of flat map operators flatmapconcat, flatmapmerge, flatmaplatest
 //flatmap concat
 // if we want to maintain the sequence of execution
+//Order 1 for User 1
+//Order 2 for User 1
+//Order 1 for User 2
+//Order 2 for User 2
+//Order 1 for User 3
+//Order 2 for User 3
 @OptIn(ExperimentalCoroutinesApi::class)
 val concat = userIdFlow.flatMapConcat { fetchOrders(it) }
 
@@ -45,7 +51,7 @@ val latest = userIdFlow.flatMapLatest { fetchOrders(it)  }
 
 fun main() = runBlocking {
 //    concat.collectLatest { println(it) }
-//    merge.collectLatest { println("merge-> $it") }
-    latest.collectLatest { println("latest-> $it") }
+    merge.collectLatest { println("merge-> $it") }
+//    latest.collectLatest { println("latest-> $it") }
 
 }

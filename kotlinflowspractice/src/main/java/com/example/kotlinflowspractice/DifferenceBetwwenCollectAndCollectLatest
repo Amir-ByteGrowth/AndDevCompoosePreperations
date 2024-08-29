@@ -1,0 +1,50 @@
+In Kotlin's coroutines library, Flow provides a declarative way to handle asynchronous streams of data.
+When working with Flow, three commonly used terminal operators are onEach, collect, and collectLatest.
+Here's how they differ:
+
+1. onEach
+Purpose: onEach is an intermediate operator used to perform a side effect for every value emitted by the flow.
+It does not trigger the collection of the flow on its own but modifies the flow by adding a side-effecting operation.
+Usage: Commonly used for logging, updating UI state, or performing any action each time a new value is emitted.
+Example:
+kotlin
+Copy code
+flowOf(1, 2, 3)
+    .onEach { println("Emitted value: $it") }
+    .collect() // Start collecting the flow to trigger onEach
+In this example, onEach prints each emitted value, but it does not start collecting the flow. The flow starts
+collecting when collect is called.
+2. collect
+Purpose: collect is a terminal operator that starts collecting the flow. It suspends the coroutine until
+the flow is fully collected (i.e., when it completes or is cancelled).
+Usage: Used to collect the emitted values from the flow and perform an action on each one. It can be
+considered the most basic operator for collecting flows.
+Example:
+kotlin
+Copy code
+flowOf(1, 2, 3)
+    .collect { value -> println("Collected value: $value") }
+Here, collect triggers the flow and prints each collected value.
+3. collectLatest
+Purpose: collectLatest is a variant of collect that starts a new collection whenever a new value is emitted. If the previous collection is still running when a new value is emitted, collectLatest cancels the previous collection and starts over with the new value.
+Usage: Useful for cases where you only care about the latest value and want to ignore previous ones if they are still processing. This is particularly useful for UI updates or operations where only the latest state matters (e.g., searching with debounce).
+Example:
+kotlin
+Copy code
+flow {
+    emit(1)
+    delay(100)
+    emit(2)
+    delay(100)
+    emit(3)
+}.collectLatest { value ->
+    println("Collecting $value")
+    delay(150) // Simulate work
+    println("Done $value")
+}
+In this example, collectLatest will start collecting 1, but when 2 is emitted after 100 ms, it cancels
+the collection of 1 and starts with 2. Similarly, when 3 is emitted after another 100 ms, it cancels the collection of 2 and starts with 3.
+Summary
+onEach: Side effects on each emission; does not collect the flow by itself.
+collect: Collects every value and runs until the flow completes; waits for each collection to finish before collecting the next value.
+collectLatest: Collects the latest value only; cancels the previous collection if a new value is emitted.
