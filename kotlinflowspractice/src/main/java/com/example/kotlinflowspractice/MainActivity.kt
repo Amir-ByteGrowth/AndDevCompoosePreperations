@@ -11,12 +11,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import com.example.kotlinflowspractice.ui.theme.CompoosePreperationsTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        lifecycleScope.launch(Dispatchers.Main) {
+            collectNetworkData()
+        }
         setContent {
             CompoosePreperationsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

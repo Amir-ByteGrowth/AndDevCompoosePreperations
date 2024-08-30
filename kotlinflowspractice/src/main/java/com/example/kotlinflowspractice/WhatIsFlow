@@ -1,0 +1,72 @@
+Kotlin flows on Android
+
+bookmark_border
+
+In coroutines, a flow is a type that can emit multiple values sequentially, as opposed to suspend functions
+that return only a single value. For example, you can use a flow to receive live updates from a database.
+
+Flows are built on top of coroutines and can provide multiple values. A flow is conceptually a stream
+of data that can be computed asynchronously. The emitted values must be of the same type. For example,
+a Flow<Int> is a flow that emits integer values.
+
+A flow is very similar to an Iterator that produces a sequence of values, but it uses suspend functions
+to produce and consume values asynchronously. This means, for example, that the flow can safely make
+a network request to produce the next value without blocking the main thread.
+
+There are three entities involved in streams of data:
+
+A producer produces data that is added to the stream. Thanks to coroutines, flows can also produce data asynchronously.
+(Optional) Intermediaries can modify each value emitted into the stream or the stream itself.
+A consumer consumes the values from the stream.
+
+
+The flow builder is executed within a coroutine. Thus, it benefits from the same asynchronous APIs,
+but some restrictions apply:
+
+Flows are sequential. As the producer is in a coroutine, when calling a suspend function, the producer
+suspends until the suspend function returns. In the example, the producer suspends until the fetchLatestNews
+network request completes. Only then is the result emitted to the stream.
+With the flow builder, the producer cannot emit values from a different CoroutineContext. Therefore,
+don't call emit in a different CoroutineContext by creating new coroutines or by using withContext blocks
+of code. You can use other flow builders such as callbackFlow in these cases.
+
+
+The flow builder is executed within a coroutine. Thus, it benefits from the same asynchronous APIs,
+but some restrictions apply:
+
+Flows are sequential. As the producer is in a coroutine, when calling a suspend function, the producer
+suspends until the suspend function returns. In the example, the producer suspends until the fetchLatestNews
+network request completes. Only then is the result emitted to the stream.
+With the flow builder, the producer cannot emit values from a different CoroutineContext. Therefore,
+don't call emit in a different CoroutineContext by creating new coroutines or by using withContext
+blocks of code. You can use other flow builders such as callbackFlow in these cases.
+
+
+In Kotlin, Flow is a cold asynchronous data stream that emits values sequentially. It is a part of the
+kotlinx.coroutines library and is designed to handle asynchronous data streams in a more reactive way.
+Here's how Flow processes data:
+
+1. Asynchronous Nature:
+Asynchronous Emission: Flow is inherently asynchronous, meaning that the values are emitted and collected
+asynchronously. The code that emits values (within a flow {} builder) does not block the thread it runs
+on; instead, it suspends the coroutine, allowing other coroutines to run concurrently.
+Asynchronous Collection: When collecting values from a Flow, the collector is suspended until a new
+value is emitted. This allows the collection process to be non-blocking and efficient, especially useful
+for handling UI events or network data asynchronously.
+2. Synchronous Execution of Code:
+While Flow itself is asynchronous in terms of emission and collection, the code inside the flow {} block
+is executed sequentially and synchronously. This means that each emission (using emit(value)) happens
+one after another, and the flow does not proceed to the next line of code until the current line (like an emit)
+completes.
+3. Concurrency with Flow Operators:
+Flow Operators: Operators like map, filter, flatMapConcat, and others operate on the emitted values
+synchronously. However, operators like flatMapMerge and flatMapLatest can introduce concurrency, allowing
+multiple flows to emit values concurrently.
+Coroutine Context: Flows respect the coroutine context in which they are collected. By default, Flow
+collection happens in the same coroutine context where it is invoked, but you can use the flowOn operator
+to change the context on which upstream operations run, which can be useful for background processing
+or handling heavy computations.
+Summary
+Flow is designed to be asynchronous by default, but the code inside a flow block executes synchronously
+in terms of one operation after another. The asynchronous nature of Flow comes from how it emits and
+collects values, making it suitable for reactive programming and handling asynchronous data streams efficiently.
