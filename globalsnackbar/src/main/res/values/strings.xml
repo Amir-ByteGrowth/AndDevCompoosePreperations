@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GlobalSnackbar</string>
+    <string name="title_activity_one_time_event_main">OneTimeEventMainActivity</string>
 </resources>

@@ -9,6 +9,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CompoosePreperations">
         <activity
+            android:name=".onetimeevent.OneTimeEventMainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_one_time_event_main"
+            android:theme="@style/Theme.CompoosePreperations">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
