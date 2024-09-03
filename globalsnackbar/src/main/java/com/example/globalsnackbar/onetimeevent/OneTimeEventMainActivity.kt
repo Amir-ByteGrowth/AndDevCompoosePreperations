@@ -32,6 +32,7 @@ import kotlinx.coroutines.withContext
 
 
 // source https://www.youtube.com/watch?v=njchj9d_Lf8
+// don't collect flow as state in composable because we don't want to listen when we are in background . instead use collectAsStateWithLifecycle() in lifecycle aware manner
 
 
 class OneTimeEventMainActivity : ComponentActivity() {
