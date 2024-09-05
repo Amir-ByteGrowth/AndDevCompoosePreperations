@@ -17,10 +17,16 @@ import kotlinx.coroutines.tasks.await
    parents class should be replaceable with subclasses  without altering the behaviour of parent (go for logger class)
 
 4- I (interface segregation principle)
-   Clients (classes) should not be forced to implement functions they do not need.
+   Clients (classes) should not be forced to implement functions they do not need. (check logger file)
 
 5- D (Dependency inversion principle)
    High-level modules should not depend on low-level modules. Both should depend on abstractions.
+   or
+   Should depends upon abstraction and not upon concretions
+   see in our repository we are taking firebase auth and logger dependency it forces us to implement firebase authentication
+   so if we have our backend authentication what we will do? we will use interface to implement this.
+   here firebase auth is concrete implementation but if we write interface it will give abstraction.
+   go for Authenticator
  */
 
 
@@ -46,6 +52,25 @@ class MainRepoImp(private val auth: FirebaseAuth, private val fileLogger: FileLo
     override suspend fun login(email: String, password: String) {
         try {
             auth.signInWithEmailAndPassword(email, password).await()
+        } catch (e: Exception) {
+            fileLogger.logError(e.message.toString())
+        }
+    }
+
+}
+
+
+// Dependency inversion principle ( should depends upon abstraction not on concretion or  )
+// here we can pass firebase auth or custom api auth
+class MainRepoImpDependencyInversion(private val auth: Authenticator, private val fileLogger: FileLogger) :
+    MainRepository {
+
+
+
+
+    override suspend fun login(email: String, password: String) {
+        try {
+            auth.login(email, password)
         } catch (e: Exception) {
             fileLogger.logError(e.message.toString())
         }

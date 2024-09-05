@@ -45,3 +45,37 @@ class CustomErrorBreakThirdRule:FileLogger(){
     }
 }
 
+
+/// Interface segregation principle ( classes should not force to implement methods they don't need)
+interface FileLoggerI {
+
+    // in interface all functions are open by default
+    fun logError(error: String) {
+        val file = File("name.txt")
+        file.appendText(text = error)
+    }
+
+    // if no definition is not given then function is abstract by default we have to override this compulsory where we implement this interface
+    // if it is not needed we can avoid this either by giving definition here or creating other class or interface for implementing fourth principle
+//    fun printLogs()
+
+}
+
+/*abstract class FileLoggerI {
+
+    // in abstract class all functions are not open by default if you want to override mention
+    them open or you have to give abstract function it will not have any bod
+    fun logError(error: String) {
+        val file = File("name.txt")
+        file.appendText(text = error)
+    }
+//  abstract  fun logError(error: String)
+}*/
+
+// interface don't need constructor for implementation
+class ErrorLogger : FileLoggerI {
+    override fun logError(error: String) {
+
+    }
+}
+
