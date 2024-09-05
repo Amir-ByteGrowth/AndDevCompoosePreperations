@@ -9,15 +9,15 @@ import kotlinx.coroutines.tasks.await
 1- S (single responsibility principle)
    A class should have one, and only one, reason to change, meaning it should have only one responsibility
 
-2- O (Open Close Principle. Open for extension and close for modification principle)
+2- O (Open Close Principle. Open for extension and close for modification principle) (go to Logger class)
 
 3- L (Liskov substitution Principle)
    Subtypes must be substitutable for their base types without altering the correctness of the program.
    or
-   parent can be replace with its subtype
+   parents class should be replaceable with subclasses  without altering the behaviour of parent (go for logger class)
 
 4- I (interface segregation principle)
-   Clients should not be forced to depend on interfaces they do not use.
+   Clients (classes) should not be forced to implement functions they do not need.
 
 5- D (Dependency inversion principle)
    High-level modules should not depend on low-level modules. Both should depend on abstractions.
