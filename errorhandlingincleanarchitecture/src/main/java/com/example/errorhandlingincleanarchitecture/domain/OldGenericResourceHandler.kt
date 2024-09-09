@@ -2,7 +2,7 @@ package com.example.errorhandlingincleanarchitecture.domain
 
 sealed class OldGenericResourceHandler<T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T?) : OldGenericResourceHandler<T>(data)
-    class Error<T>(data: T? = null, message: String?) : OldGenericResourceHandler<T>(data, message)
+    class Error<T>(data: T? = null, message: String) : OldGenericResourceHandler<T>(data, message)
 }
 /*this class is used only for showing the error message to the users
     there are two problems in this class

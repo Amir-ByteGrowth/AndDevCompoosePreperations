@@ -1,0 +1,3 @@
+package com.example.errorhandlingincleanarchitecture.domain
+
+sealed class Error
