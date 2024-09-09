@@ -1,3 +1,3 @@
 package com.example.errorhandlingincleanarchitecture.domain
 
-sealed class Error
+sealed interface Error
