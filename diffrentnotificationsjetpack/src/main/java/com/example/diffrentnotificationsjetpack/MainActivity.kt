@@ -4,15 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.diffrentnotificationsjetpack.notifications.SimpleNotification
 import com.example.diffrentnotificationsjetpack.notifications.createNotificationChannels
-import com.example.diffrentnotificationsjetpack.notifications.showMessageNotification
 import com.example.diffrentnotificationsjetpack.notifications.showUpdateNotification
 import com.example.diffrentnotificationsjetpack.ui.theme.CompoosePreperationsTheme
 
@@ -20,16 +23,21 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        createNotificationChannels(applicationContext)
+//        createNotificationChannels(applicationContext)
 //        showMessageNotification(applicationContext)
-        showUpdateNotification(applicationContext)
+//        showUpdateNotification(applicationContext)
         setContent {
             CompoosePreperationsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Button(onClick = { SimpleNotification(this@MainActivity) }) {
+                            Text(text = "Simple Notification")
+                        }
+                    }
                 }
             }
         }
