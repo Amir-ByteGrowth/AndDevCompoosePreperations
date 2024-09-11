@@ -1,0 +1,19 @@
+Which Structure to use is depends upon project, project scaling in future.
+if project have some fetures we can use use mvvm directly model view model and view , or data, presentation domain layer
+if project is scalling gradually then wee will divide our project into feature
+than have these layers separately for all features
+for example
+Auth Feature may consists of (Register, Login, Forgot Password, Passcode login, KYC)
+Profile ( Profile Detail, Edit Profile)
+Product(Product List, Product Detail, Reviews and Ratings)
+by using this approach we can move forward multi module approach
+
+
+we can name package either by context or by types in domain and data layer
+1- types of objects like ( models, repository or uses cases)
+2- context of classes inside the package for User package will contain classes User, getUserUseCase and UserValidation
+
+which is good
+if your project is large or feature is too much large then use context base structure
+
+if feature is cleared and comparatively small size then we will use type base packaging
