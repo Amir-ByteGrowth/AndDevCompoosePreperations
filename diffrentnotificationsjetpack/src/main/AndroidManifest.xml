@@ -21,6 +21,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".notifications.ReplyBroadCasReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".notifications.MessageReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name=".notifications.NextPlay"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".notifications.PreviousPlay"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".notifications.PlayPause"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".notifications.CustomNotificationReceiver"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>
