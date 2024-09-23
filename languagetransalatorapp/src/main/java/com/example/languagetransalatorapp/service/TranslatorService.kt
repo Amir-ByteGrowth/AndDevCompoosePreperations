@@ -4,7 +4,10 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.util.Log
+import androidx.compose.ui.text.intl.Locale
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
@@ -13,6 +16,7 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 class TranslatorService : Service() {
 
 
+    //
     val binder = TranslatorBinder()
 
     inner class TranslatorBinder : Binder() {
@@ -40,6 +44,11 @@ class TranslatorService : Service() {
     override fun onDestroy() {
         super.onDestroy()
     }
+
+
+
+
+
 
     fun translate(text: String, onSuccess: (String) -> Unit, onFailure: () -> Unit) {
         Log.d("TextFound","InMethod")
