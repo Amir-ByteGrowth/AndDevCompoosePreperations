@@ -1,0 +1,25 @@
+what is bound service?
+
+Bound Service
+Usage: Allows components (like activities, fragments, or other services) to bind to the service, and
+communicate with it through inter-process communication (IPC).
+Thread: Operates on the main (UI) thread by default. Threading must be handled manually using worker threads.
+Lifecycle:
+onCreate() → onBind() → Bound → onUnbind() → onDestroy()
+Termination: The service runs only as long as another component is bound to it. Once all clients are unbound, it stops.
+Example: Music playback where the UI needs to control the player.
+Special Note: A bound service does not need a persistent notification.
+
+// we will you bound service when we want tow way communication with service, here bound service act as
+server and your component becomes client,
+
+1- onCreate()
+2- onBind()
+all clients are bound to the services
+
+3- onUnbind() return true or false
+all clients unbind by calling unbindService()
+
+4- (optional)- onRebind() it will trigger only when we return true from onUnbind() method if its value is false then next lifecycle method will be onDestroy()
+
+5- onDestroy()
