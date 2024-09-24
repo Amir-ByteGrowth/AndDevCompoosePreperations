@@ -69,5 +69,6 @@ dependencies {
 
     implementation ("com.google.mlkit:translate:17.0.3")
     implementation ("com.google.accompanist:accompanist-permissions:0.36.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
 }
